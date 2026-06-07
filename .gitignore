@@ -35,3 +35,6 @@ Thumbs.db
 *.tsbuildinfo
 .turbo
 coverage/
+
+# Local Claude Code settings
+.claude/
