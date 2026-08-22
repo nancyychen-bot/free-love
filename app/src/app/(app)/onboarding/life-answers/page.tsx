@@ -11,7 +11,7 @@ const OPTIONAL_PROMPTS = [
   'what a really good day looks like for me',
   'what I\'m most grateful for',
   'what I value most in a friendship',
-  'something I\'ve dreamed of doing and why I haven\'t yet',
+  'something I\'ve dreamed of doing',
   'my most treasured memory',
   'something that changed how I see things',
   'what I\'m still figuring out',
