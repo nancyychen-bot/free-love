@@ -3,15 +3,12 @@ import FooterLink from '@/app/components/FooterLink';
 import { signPledge } from '../actions';
 
 const pledgeLines = [
-  "I'm here for something real.",
-  "Not a hookup. Not a distraction. Not a game.",
-  "Whether it becomes a short relationship or a long one, I'm here to meet a real person — and be met as one myself.",
-  "I'll show up as who I actually am. My profile is honest.",
-  "I'll be respectful, even when it's easier not to be.",
-  "When a conversation isn't working, I'll say so — I won't just vanish.",
-  "I won't harass, coerce, or send anything nobody asked for.",
-  "If something unsafe happens, I'll speak up. I trust it'll be taken seriously.",
-  "I understand that breaking this ends my account, permanently.",
+  "I'm here for something real — not a hookup, not a distraction, not a game.",
+  "Whether short or long, I'm here to meet a real person and be met as one myself.",
+  "My profile is honest. I show up as who I actually am.",
+  "When a conversation isn't working, I'll say so, not vanish.",
+  "I won't harass, coerce, or send anything unsolicited.",
+  "If something feels unsafe, I'll speak up — and breaking this ends my account.",
 ];
 
 export default function PledgePage() {
@@ -89,10 +86,10 @@ export default function PledgePage() {
               key={i}
               style={{
                 fontFamily: 'var(--font-human)',
-                fontSize: 18,
-                lineHeight: 1.55,
+                fontSize: 17,
+                lineHeight: 1.5,
                 color: 'var(--ink-human)',
-                marginTop: i === 0 ? 0 : 22,
+                marginTop: i === 0 ? 0 : 18,
               }}
             >
               {line}
