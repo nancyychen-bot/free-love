@@ -106,7 +106,7 @@ The move beyond the precedents: **combine Alovoa's ethical model + Revel's anti-
 
 ## Prioritized recommendations for Free Love
 
-1. **Lead the entire brand on the structural argument.** "We're a non-profit, so we win when you leave." It's now backed by the FTC settlement and Match's own filings — cite them. This is marketing *and* truth.
+1. **Lead the credibility layer on the structural argument.** "We're a non-profit, so we win when you leave." It's now backed by the FTC settlement and Match's own filings — cite them. Lead with the felt experience (curation, relief from the casino); prove with the structure (non-profit, open source, published finances, billing pauses during droughts).
 2. **Make trust & safety the defining feature**, scoped to what donations can sustain. Verification, harassment handling, and fake-account removal should be visibly better than incumbents from day one. This is the biggest, best-evidenced opening.
 3. **Adopt the validated model:** AGPL + transparent donation funding (follow Alovoa), and finite daily introductions (follow Revel). Don't reinvent what's already proven.
 4. **Solve cold-start by going dense, not broad.** Launch in one tight, values-aligned community. Candidates: queer women / WSW (under-served, safety-sensitive) or an intentions-first local community. Pick deliberately.

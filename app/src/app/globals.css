@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+/* ── Design tokens ─────────────────────────────────────────── */
+
+:root {
+  --paper: #F8F8F6;
+  --ink-true: #0A0A0A;
+  --ink-human: #2A2A2A;
+  --gray-quiet: #8A8A85;
+  --rule: #E2E2DD;
+  --introduction: #2B2266;
+  --introduction-wash: #EDEAF7;
+
+  --font-system: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  --font-human: var(--font-newsreader), "Georgia", serif;
+
+  --gutter: 24px;
+  --gutter-manifesto: 26px;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink-true);
+  font-family: var(--font-system);
+  line-height: 1.5;
+}
+
+/* Remove all default shadows and rounded corners */
+button,
+input,
+select,
+textarea {
+  border-radius: 0;
+  box-shadow: none;
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Screen container ──────────────────────────────────────── */
+
+.screen {
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--paper);
+  position: relative;
+  font-family: var(--font-system);
+}
+
+/* ── Typography: System voice (IBM Plex Mono) ──────────────── */
+
+.type-status-bar {
+  font-family: var(--font-system);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--gray-quiet);
+}
+
+.type-screen-header {
+  font-family: var(--font-system);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-true);
+}
+
+.type-eyebrow {
+  font-family: var(--font-system);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-true);
+}
+
+.type-system-body {
+  font-family: var(--font-system);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--ink-true);
+}
+
+.type-metadata {
+  font-family: var(--font-system);
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--gray-quiet);
+}
+
+.type-table-row {
+  font-family: var(--font-system);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-true);
+}
+
+.type-button-label {
+  font-family: var(--font-system);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-true);
+}
+
+.type-drought-headline {
+  font-family: var(--font-system);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-true);
+}
+
+/* ── Typography: Human voice (Newsreader) ──────────────────── */
+
+.type-human-answer {
+  font-family: var(--font-human);
+  font-size: 18.5px;
+  font-weight: 400;
+  line-height: 1.62;
+  color: var(--ink-human);
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+.type-human-message {
+  font-family: var(--font-human);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--ink-human);
+  text-wrap: pretty;
+}
+
+.type-sign-in-statement {
+  font-family: var(--font-human);
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink-human);
+  text-wrap: pretty;
+}
+
+.type-manifesto-statement {
+  font-family: var(--font-human);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink-human);
+  max-width: 24ch;
+  text-wrap: pretty;
+}
+
+.type-manifesto-lede {
+  font-family: var(--font-human);
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1.28;
+  color: var(--ink-human);
+  text-wrap: pretty;
+}
+
+/* ── Rules (hairlines) ─────────────────────────────────────── */
+
+.rule {
+  border: none;
+  border-top: 1px solid var(--rule);
+}
+
+.rule-bottom {
+  border: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ── Introduction accent surfaces ──────────────────────────── */
+
+.introduction-text {
+  color: var(--introduction);
+}
+
+.introduction-wash {
+  background: var(--introduction-wash);
+}
+
+/* ── Utility ───────────────────────────────────────────────── */
+
+.prose-pretty {
+  text-wrap: pretty;
+}
+
+/* Avatar circles are the ONE exception to border-radius: 0 */
+.avatar-circle {
+  border-radius: 9999px;
+}
