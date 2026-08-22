@@ -142,8 +142,8 @@ export default function PhotosPage() {
             marginTop: 12,
           }}
         >
-          {phase === ‘choose’
-            ? "Two face photos are required. Pick at least three more themes — as many as you like. The more you share, the more someone can see who you are."
+          {phase === 'choose'
+            ? "Two face photos are required. Pick at least three more themes. The more you share, the more someone can see who you are."
             : "Upload a photo for each theme. Tap a box to choose a file."}
         </p>
 
@@ -328,14 +328,13 @@ export default function PhotosPage() {
                       }}
                       style={{
                         width: '100%',
-                        aspectRatio: '3 / 2',
+                        minHeight: 180,
                         border: url ? '1px solid var(--rule)' : '1px dashed var(--rule)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: isUploading ? 'wait' : 'pointer',
                         overflow: 'hidden',
-                        position: 'relative',
                       }}
                     >
                       {url ? (
@@ -344,8 +343,8 @@ export default function PhotosPage() {
                           alt={theme}
                           style={{
                             width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
+                            height: 'auto',
+                            display: 'block',
                           }}
                         />
                       ) : (
@@ -367,7 +366,7 @@ export default function PhotosPage() {
                         fileInputRefs.current[theme] = el;
                       }}
                       type="file"
-                      accept="image/*"
+                      accept="image/*,.heic,.heif"
                       style={{ display: 'none' }}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
