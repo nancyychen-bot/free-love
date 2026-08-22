@@ -116,15 +116,16 @@ export default function SignIn() {
           >
             how this works
           </Link>
-          <span
+          <Link
+            href="/manifesto"
             style={{
               fontFamily: 'var(--font-system)',
               fontSize: 11,
               color: 'var(--gray-quiet)',
             }}
           >
-            what we do with your answers
-          </span>
+            the manifesto
+          </Link>
         </div>
       </div>
     </div>
