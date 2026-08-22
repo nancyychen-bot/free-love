@@ -2,12 +2,24 @@ import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
 import { signPledge } from '../actions';
 
+const pledgeLines = [
+  "I'm here for something real.",
+  "Not a hookup. Not a distraction. Not a game.",
+  "Whether it becomes a short relationship or a long one, I'm here to meet a real person — and be met as one myself.",
+  "I'll show up as who I actually am. My profile is honest.",
+  "I'll be respectful, and honest, even when it's easier not to be.",
+  "I won't harass, coerce, or send anything nobody asked for.",
+  "When a conversation isn't working, I'll say so — I won't just vanish.",
+  "If something unsafe happens, I'll speak up. I trust it'll be taken seriously.",
+  "I understand that breaking this ends my account, permanently.",
+];
+
 export default function PledgePage() {
   return (
     <div className="screen">
       <StatusBar />
 
-      <div style={{ padding: '40px 24px 0' }}>
+      <div style={{ padding: '40px 24px 100px' }}>
         {/* Step row */}
         <div
           style={{
@@ -57,26 +69,39 @@ export default function PledgePage() {
           THE PLEDGE
         </h1>
 
-        {/* Pledge text */}
+        {/* Intro line */}
         <p
           style={{
-            fontFamily: 'var(--font-human)',
-            fontSize: 18.5,
-            lineHeight: 1.62,
-            color: 'var(--ink-human)',
-            marginTop: 30,
+            fontFamily: 'var(--font-system)',
+            fontSize: 12.5,
+            lineHeight: 1.65,
+            color: 'var(--gray-quiet)',
+            marginTop: 14,
           }}
         >
-          I am who I say I am, and my profile accurately represents who I am.
-          I will engage with respect and honesty. I will not harass, coerce,
-          or send unsolicited explicit content. When I&rsquo;m done with a
-          conversation, I&rsquo;ll say so — not vanish. I&rsquo;ll report
-          unsafe behavior and trust it will be taken seriously. I understand
-          violations end my account, permanently.
+          Read it, mean it, sign it.
         </p>
 
-        {/* Footer button */}
-        <form action={signPledge} style={{ marginTop: 40, paddingBottom: 80 }}>
+        {/* Pledge lines — each as its own paragraph */}
+        <div style={{ marginTop: 32 }}>
+          {pledgeLines.map((line, i) => (
+            <p
+              key={i}
+              style={{
+                fontFamily: 'var(--font-human)',
+                fontSize: 18,
+                lineHeight: 1.55,
+                color: 'var(--ink-human)',
+                marginTop: i === 0 ? 0 : 22,
+              }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+
+        {/* Sign button */}
+        <form action={signPledge} style={{ marginTop: 44 }}>
           <button
             type="submit"
             style={{
@@ -91,7 +116,7 @@ export default function PledgePage() {
               cursor: 'pointer',
             }}
           >
-            i agree
+            i agree — take me in
           </button>
         </form>
       </div>
