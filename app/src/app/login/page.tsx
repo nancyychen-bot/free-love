@@ -33,7 +33,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push('/introduction');
+      router.push('/home');
     } catch {
       setError('Something went wrong');
       setLoading(false);

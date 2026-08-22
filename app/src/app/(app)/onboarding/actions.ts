@@ -1,10 +1,11 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { users, profiles, lifeBasics, rankedQualities, rankedValues, lifeAnswers, lifeSignals } from '@/lib/db/schema';
+import { users, profiles, lifeBasics, rankedQualities, rankedValues, lifeAnswers, lifeSignals, introductions } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
 import { and, eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
+import { ensureSeedProfile } from '@/lib/seed-profiles';
 
 export async function signPledge() {
   const user = await getUser();
@@ -291,7 +292,28 @@ export async function completeOnboarding() {
     .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
 
-  redirect('/drought');
+  // Auto-create a test introduction with the seed profile
+  try {
+    const seedUserId = await ensureSeedProfile();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 5);
+
+    await db.insert(introductions).values({
+      userAId: user.id,
+      userBId: seedUserId,
+      score: '0.81',
+      floorA: '0.74',
+      floorB: '0.74',
+      explanation: 'You both ranked warmth and humor highest. Neither of you flagged a dealbreaker the other holds. Her answer about what a good day looks like and yours both describe small, quiet moments over grand gestures.',
+      source: 'engine',
+      status: 'pending',
+      expiresAt,
+    });
+  } catch {
+    // If introduction already exists or seed fails, continue silently
+  }
+
+  redirect('/home');
 }
 
 export async function savePhotos(photos: { theme: string; url: string }[]) {
