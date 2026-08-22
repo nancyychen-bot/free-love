@@ -14,7 +14,7 @@ const OPTIONAL_PROMPTS = [
   'something I\'ve dreamed of doing and why I haven\'t yet',
   'my most treasured memory',
   'something that changed how I see things',
-  'one thing I\'d change about how I was raised',
+  'what I\'m still figuring out',
   'what I care about most right now',
   'what people get wrong about me',
 ];
