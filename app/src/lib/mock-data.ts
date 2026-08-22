@@ -76,7 +76,7 @@ export const mockRanking = {
   totalSteps: 9,
   privacy: "private matching input",
   ranked: ["candor", "independence", "curiosity", "patience"],
-  unranked: ["ambition", "humour", "steadiness", "generosity"],
+  unranked: ["ambition", "humor", "steadiness", "generosity"],
 };
 
 export const mockDealbreaker = {

@@ -6,7 +6,7 @@ const dataRows = [
   { what: "password hash", why: "authentication", who: "never stored in plain text" },
   { what: "display name, age", why: "shown on your public profile", who: "your matches" },
   { what: "gender, orientation, seeking", why: "hard filter — who you see and who sees you", who: "never shown to matches" },
-  { what: "location (city-level)", why: "radius matching", who: "shown as neighbourhood + distance" },
+  { what: "location (city-level)", why: "radius matching", who: "shown as neighborhood + distance" },
   { what: "life basics answers", why: "soft matching + dealbreaker filtering", who: "never shown to matches" },
   { what: "dealbreaker flags", why: "absolute filters — we never match you across a hard line", who: "never shown to matches" },
   { what: "ranked qualities (4)", why: "matching weight — rank order matters", who: "never shown to matches" },

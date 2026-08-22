@@ -5,8 +5,8 @@ import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
 import { saveQualities } from '../actions';
 
-const DEFAULT_RANKED = ['candor', 'independence', 'curiosity', 'patience'];
-const DEFAULT_UNRANKED = ['ambition', 'humour', 'steadiness', 'generosity'];
+const DEFAULT_RANKED = ['humor', 'candor', 'curiosity', 'warmth'];
+const DEFAULT_UNRANKED = ['ambition', 'steadiness', 'depth', 'playfulness', 'self-awareness'];
 
 export default function QualitiesPage() {
   const [ranked, setRanked] = useState<string[]>(DEFAULT_RANKED);

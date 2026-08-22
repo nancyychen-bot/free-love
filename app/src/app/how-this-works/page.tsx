@@ -10,7 +10,7 @@ const receipts = [
 const steps = [
   "Hard filters. Your dealbreakers, in both directions. If you said kids are a hard line, nobody who said otherwise will ever appear.",
   "Your ranked values, weighted in the order you put them. A shared first-rank value counts far more than a shared fourth.",
-  "Your ranked qualities, same logic. The system scores overlap and penalises misalignment proportionally to rank.",
+  "Your ranked qualities, same logic. The system scores overlap and penalizes misalignment proportionally to rank.",
   "A small model reads both sets of life answers and scores the meaning overlap. It sees the pair, and nothing else — never the full pool, never your history, never your photos.",
   "The scores combine by a published formula. Rules-based structure plus qualitative meaning, each weighted, each auditable.",
   "Below your floor, nothing surfaces. There is no best available today. We'd rather give you nothing than give you filler.",
@@ -28,14 +28,14 @@ const mechanics = [
 ];
 
 const principles = [
-  "We optimise for exits, not engagement. Our north-star metric is successful departures — people who found their person and left.",
+  "We optimize for exits, not engagement. Our north-star metric is successful departures — people who found their person and left.",
   "Nobody's visibility is auctioned. Nobody buys an advantage. Same price for everyone. Billing pauses when we give you nothing.",
-  "We collect the minimum, say exactly what we keep, and never monetise who you are.",
+  "We collect the minimum, say exactly what we keep, and never monetize who you are.",
   "We will not sort people into desirability tiers. If we surface two people to each other, we can tell them why.",
   "No infinite deck. No variable-reward mechanics. No fixed daily quota that forces filler. Introductions happen when someone genuinely matches.",
   "Profiles reveal how someone lives — not just how they look. Photos are part of the picture, never the first thing you judge.",
   "We design against ghosting and toward kind closure. When something ends, it ends with dignity.",
-  "Every person is verified as real. Abusive behaviour is met with zero tolerance. Safety is built in, not bolted on.",
+  "Every person is verified as real. Abusive behavior is met with zero tolerance. Safety is built in, not bolted on.",
   "The matching logic is not a black box. Anyone can read how they are being matched. The code is open source, the formula is published, the explanation is plain language.",
 ];
 

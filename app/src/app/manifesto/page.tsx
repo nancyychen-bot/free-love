@@ -19,7 +19,7 @@ const commitments = [
 const principles = [
   {
     number: "01",
-    statement: "We optimise for exits, not engagement.",
+    statement: "We optimize for exits, not engagement.",
     body: "Our north-star metric is successful departures. We measure them, publish them, celebrate them. We will never measure time in app as a goal.",
   },
   {
@@ -30,7 +30,7 @@ const principles = [
   {
     number: "03",
     statement: "No selling data. No ad targeting. No surveillance.",
-    body: "We collect the minimum, say exactly what we keep, and never monetise who you are. This is an ethic and a moat — the one thing they cannot copy without dismantling their business.",
+    body: "We collect the minimum, say exactly what we keep, and never monetize who you are. This is an ethic and a moat — the one thing they cannot copy without dismantling their business.",
   },
   {
     number: "04",
@@ -55,7 +55,7 @@ const principles = [
   {
     number: "08",
     statement: "Safety is a product, not a settings page.",
-    body: "Every person is verified as real. Abusive behaviour is met with zero tolerance. We will never ask someone — especially women — to adjust their settings to feel safe.",
+    body: "Every person is verified as real. Abusive behavior is met with zero tolerance. We will never ask someone — especially women — to adjust their settings to feel safe.",
   },
   {
     number: "09",
