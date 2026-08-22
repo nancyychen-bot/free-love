@@ -40,7 +40,7 @@ export default function SignIn() {
               textDecoration: 'none',
             }}
           >
-            start the nine questions
+            sign up
           </Link>
 
           <Link
@@ -59,7 +59,7 @@ export default function SignIn() {
               textDecoration: 'none',
             }}
           >
-            login / signup
+            login
           </Link>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
