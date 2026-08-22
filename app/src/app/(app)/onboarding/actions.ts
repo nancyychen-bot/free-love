@@ -295,8 +295,8 @@ export async function completeOnboarding() {
   // Seed test data directly — intro + conversations
   try {
     await seedUserData(user.id, user.email);
-  } catch {
-    // continue silently if seeding fails
+  } catch (e) {
+    console.error('SEED FAILED:', e);
   }
 
   redirect('/home');
@@ -333,5 +333,12 @@ export async function savePhotos(photos: { theme: string; url: string }[]) {
     .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
 
-  redirect('/drought');
+  // Seed test data
+  try {
+    await seedUserData(user.id, user.email);
+  } catch (e) {
+    console.error('SEED FAILED in savePhotos:', e);
+  }
+
+  redirect('/home');
 }
