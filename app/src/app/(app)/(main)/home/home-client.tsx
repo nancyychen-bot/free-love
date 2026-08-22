@@ -14,7 +14,7 @@ type IntroData = {
   photos: { theme: string; url: string }[];
 };
 
-type ConvoData = { id: string; name: string; lastMessage: string };
+type ConvoData = { id: string; name: string; photo: string | null; lastMessage: string };
 
 export default function HomeClient({
   userName,
@@ -165,28 +165,33 @@ export default function HomeClient({
         {conversations.length > 0 ? (
           conversations.map((convo) => (
             <Link key={convo.id} href={`/conversations/${convo.id}`} style={{
-              display: 'block', padding: '16px 0', borderTop: '1px solid var(--rule)',
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: '16px 0', borderTop: '1px solid var(--rule)',
               textDecoration: 'none',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              {convo.photo ? (
+                <div className="avatar-circle" style={{ width: 40, height: 40, minWidth: 40, overflow: 'hidden' }}>
+                  <img src={convo.photo} alt={convo.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '9999px' }} />
+                </div>
+              ) : (
+                <div className="avatar-circle" style={{ width: 40, height: 40, minWidth: 40, border: '1px dashed var(--gray-quiet)' }} />
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{
                   fontFamily: 'var(--font-system)', fontSize: 12.5, fontWeight: 500,
                   letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-true)',
                 }}>
                   {convo.name}
                 </p>
-                <span style={{ fontFamily: 'var(--font-system)', fontSize: 11, color: 'var(--gray-quiet)' }}>
-                  &#8250;
-                </span>
+                <p style={{
+                  fontFamily: 'var(--font-human)', fontSize: 15, lineHeight: 1.5,
+                  color: 'var(--ink-human)', marginTop: 4,
+                  overflow: 'hidden', display: '-webkit-box',
+                  WebkitLineClamp: 1, WebkitBoxOrient: 'vertical',
+                }}>
+                  {convo.lastMessage}
+                </p>
               </div>
-              <p style={{
-                fontFamily: 'var(--font-human)', fontSize: 15, lineHeight: 1.5,
-                color: 'var(--ink-human)', marginTop: 6,
-                overflow: 'hidden', display: '-webkit-box',
-                WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-              }}>
-                {convo.lastMessage}
-              </p>
             </Link>
           ))
         ) : (

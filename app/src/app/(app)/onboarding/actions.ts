@@ -292,25 +292,34 @@ export async function completeOnboarding() {
     .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
 
-  // Auto-create a test introduction with the seed profile
+  // Seed full test data — intro + conversations
   try {
-    const seedUserId = await ensureSeedProfile();
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 5);
-
-    await db.insert(introductions).values({
-      userAId: user.id,
-      userBId: seedUserId,
-      score: '0.81',
-      floorA: '0.74',
-      floorB: '0.74',
-      explanation: 'You both ranked warmth and humor highest. Neither of you flagged a dealbreaker the other holds. Her answer about what a good day looks like and yours both describe small, quiet moments over grand gestures.',
-      source: 'engine',
-      status: 'pending',
-      expiresAt,
+    await fetch(`${process.env.NEXT_PUBLIC_URL || 'https://free-love-prototype.vercel.app'}/api/seed-full`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email }),
     });
   } catch {
-    // If introduction already exists or seed fails, continue silently
+    // Fallback: try direct seed
+    try {
+      const seedUserId = await ensureSeedProfile();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 5);
+
+      await db.insert(introductions).values({
+        userAId: user.id,
+        userBId: seedUserId,
+        score: '0.81',
+        floorA: '0.74',
+        floorB: '0.74',
+        explanation: 'You both ranked warmth and humor highest. Neither of you flagged a dealbreaker the other holds. Her answer about what a good day looks like and yours both describe small, quiet moments over grand gestures.',
+        source: 'engine',
+        status: 'pending',
+        expiresAt,
+      });
+    } catch {
+      // continue silently
+    }
   }
 
   redirect('/home');

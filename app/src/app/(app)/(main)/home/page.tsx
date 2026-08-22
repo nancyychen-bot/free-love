@@ -98,10 +98,20 @@ export default async function HomePage() {
     convos.map(async (convo) => {
       const otherUserId = convo.userAId === user.id ? convo.userBId : convo.userAId;
       const [profile] = await db
-        .select({ displayName: profiles.displayName })
+        .select({ id: profiles.id, displayName: profiles.displayName })
         .from(profiles)
         .where(eq(profiles.userId, otherUserId))
         .limit(1);
+
+      let photo: string | null = null;
+      if (profile) {
+        const [sig] = await db
+          .select({ url: lifeSignals.photoUrl })
+          .from(lifeSignals)
+          .where(eq(lifeSignals.profileId, profile.id))
+          .limit(1);
+        photo = sig?.url ?? null;
+      }
 
       const [lastMsg] = await db
         .select({ body: messages.body })
@@ -113,6 +123,7 @@ export default async function HomePage() {
       return {
         id: convo.id,
         name: profile?.displayName || 'Someone',
+        photo,
         lastMessage: lastMsg?.body || 'Start the conversation...',
       };
     })

@@ -5,7 +5,9 @@ import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
 import { savePhotos } from '../actions';
 
-const ALL_THEMES = [
+const REQUIRED_THEME = 'just me';
+
+const OPTIONAL_THEMES = [
   'me in my element',
   'my living space',
   'my bookshelf',
@@ -21,7 +23,7 @@ const ALL_THEMES = [
   'a place I\'ve traveled to',
 ];
 
-const MIN_PHOTOS = 5;
+const MIN_OPTIONAL = 4; // 1 required + 4 optional = 5 minimum
 
 export default function PhotosPage() {
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
@@ -31,8 +33,9 @@ export default function PhotosPage() {
   const [isPending, startTransition] = useTransition();
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
+  const allThemes = [REQUIRED_THEME, ...selectedThemes];
   const uploadedCount = Object.keys(uploadedUrls).length;
-  const allUploaded = selectedThemes.every((t) => uploadedUrls[t]);
+  const allUploaded = allThemes.every((t) => uploadedUrls[t]);
 
   const toggleTheme = (theme: string) => {
     setSelectedThemes((prev) =>
@@ -41,7 +44,7 @@ export default function PhotosPage() {
   };
 
   const handleContinue = () => {
-    if (selectedThemes.length >= MIN_PHOTOS) {
+    if (selectedThemes.length >= MIN_OPTIONAL) {
       setPhase('upload');
     }
   };
@@ -66,7 +69,7 @@ export default function PhotosPage() {
   };
 
   const handleFinish = () => {
-    const photos = selectedThemes
+    const photos = allThemes
       .filter((t) => uploadedUrls[t])
       .map((t) => ({ theme: t, url: uploadedUrls[t] }));
 
@@ -111,14 +114,32 @@ export default function PhotosPage() {
           color: 'var(--gray-quiet)', marginTop: 12,
         }}>
           {phase === 'choose'
-            ? "Upload at least five photos. Make sure two of them include a clear photo of your face and body. Choose as many themes as you like."
+            ? "Your 'just me' photo is your profile picture. Pick at least four more themes. Upload as many as you like."
             : "Upload a photo for each theme. Tap a box to choose a file."}
         </p>
 
         {phase === 'choose' && (
           <>
-            {/* Theme selection */}
+            {/* Required theme */}
             <div style={{ marginTop: 28 }}>
+              <div style={{
+                fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+                letterSpacing: '0.16em', textTransform: 'uppercase',
+                color: 'var(--gray-quiet)', marginBottom: 10,
+              }}>
+                YOUR PROFILE PICTURE — REQUIRED
+              </div>
+              <div style={{
+                fontFamily: 'var(--font-system)', fontSize: 13.5,
+                color: 'var(--ink-true)', border: '1px solid var(--ink-true)',
+                padding: '9px 12px', lineHeight: 1, display: 'inline-block',
+              }}>
+                just me
+              </div>
+            </div>
+
+            {/* Optional theme selection */}
+            <div style={{ marginTop: 24 }}>
               <div style={{
                 display: 'flex', justifyContent: 'space-between',
                 alignItems: 'center', marginBottom: 12,
@@ -127,19 +148,19 @@ export default function PhotosPage() {
                   fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
                   letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
                 }}>
-                  CHOOSE YOUR THEMES
+                  CHOOSE MORE THEMES
                 </span>
                 <span style={{
                   fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
                   letterSpacing: '0.16em',
-                  color: selectedThemes.length >= MIN_PHOTOS ? 'var(--ink-true)' : 'var(--gray-quiet)',
+                  color: selectedThemes.length >= MIN_OPTIONAL ? 'var(--ink-true)' : 'var(--gray-quiet)',
                 }}>
-                  {selectedThemes.length} CHOSEN{selectedThemes.length < MIN_PHOTOS ? ` (${MIN_PHOTOS - selectedThemes.length} MORE)` : ''}
+                  {selectedThemes.length} CHOSEN{selectedThemes.length < MIN_OPTIONAL ? ` (${MIN_OPTIONAL - selectedThemes.length} MORE)` : ''}
                 </span>
               </div>
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {ALL_THEMES.map((theme) => {
+                {OPTIONAL_THEMES.map((theme) => {
                   const isSelected = selectedThemes.includes(theme);
                   return (
                     <button
@@ -163,13 +184,13 @@ export default function PhotosPage() {
             {/* Continue button */}
             <button
               onClick={handleContinue}
-              disabled={selectedThemes.length < MIN_PHOTOS}
+              disabled={selectedThemes.length < MIN_OPTIONAL}
               style={{
                 width: '100%', padding: 15, marginTop: 28,
-                background: selectedThemes.length >= MIN_PHOTOS ? 'var(--ink-true)' : 'var(--gray-quiet)',
+                background: selectedThemes.length >= MIN_OPTIONAL ? 'var(--ink-true)' : 'var(--gray-quiet)',
                 color: 'var(--paper)', fontFamily: 'var(--font-system)',
                 fontSize: 13.5, fontWeight: 500, border: 'none',
-                cursor: selectedThemes.length >= MIN_PHOTOS ? 'pointer' : 'default',
+                cursor: selectedThemes.length >= MIN_OPTIONAL ? 'pointer' : 'default',
               }}
             >
               continue to upload
@@ -180,7 +201,7 @@ export default function PhotosPage() {
         {phase === 'upload' && (
           <>
             <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {selectedThemes.map((theme) => {
+              {allThemes.map((theme) => {
                 const url = uploadedUrls[theme];
                 const isUploading = uploading[theme];
 
@@ -234,7 +255,7 @@ export default function PhotosPage() {
               fontFamily: 'var(--font-system)', fontSize: 11.5, lineHeight: 1.65,
               color: 'var(--gray-quiet)', marginTop: 20,
             }}>
-              {uploadedCount} of {selectedThemes.length} uploaded
+              {uploadedCount} of {allThemes.length} uploaded
             </p>
 
             <button
