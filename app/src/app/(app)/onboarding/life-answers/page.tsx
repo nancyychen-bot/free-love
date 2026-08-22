@@ -91,8 +91,7 @@ export default function LifeAnswersPage() {
           fontFamily: 'var(--font-system)', fontSize: 12.5, lineHeight: 1.7,
           color: 'var(--gray-quiet)', marginTop: 12,
         }}>
-          These appear on your profile and are read by the matching engine.
-          Choose the three you connect with most. Write at least a few sentences each.
+          These are designed to help us match you for real compatibility — not just shared interests, but how you think and what you care about. They also appear on your profile. Choose the three you connect with most.
         </p>
 
         {/* Prompt selection — show when < 3 selected */}
