@@ -28,15 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${ibmPlexMono.variable} ${newsreader.variable}`}
     >
-      <body>
-        <div className="phone-stage">
-          <div className="phone-bezel">
-            <div className="phone-frame">
-              {children}
-            </div>
-          </div>
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
