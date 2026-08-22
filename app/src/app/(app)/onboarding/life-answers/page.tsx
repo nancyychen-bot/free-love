@@ -5,10 +5,16 @@ import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
 import { saveLifeAnswers } from '../actions';
 
-const PROMPTS = [
-  'THE KIND OF PEOPLE I’M DRAWN TO',
-  'WHAT A GOOD LIFE LOOKS LIKE TO ME',
-  'SOMETHING I’VE LEARNED ABOUT MYSELF RECENTLY',
+const ALL_PROMPTS = [
+  'what a really good day looks like for me',
+  'what I\'m most grateful for',
+  'what I value most in a friendship',
+  'something I\'ve dreamed of doing and why I haven\'t yet',
+  'my most treasured memory',
+  'something that changed how I see things',
+  'one thing I\'d change about how I was raised',
+  'what I care about most right now',
+  'what people get wrong about me',
 ];
 
 function countWords(text: string): number {
@@ -18,28 +24,37 @@ function countWords(text: string): number {
 }
 
 export default function LifeAnswersPage() {
-  const [answers, setAnswers] = useState<string[]>(['', '', '']);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
-  const updateAnswer = (index: number, value: string) => {
-    setAnswers((prev) => {
-      const next = [...prev];
-      next[index] = value;
-      return next;
+  function togglePrompt(prompt: string) {
+    setSelected(prev => {
+      if (prev.includes(prompt)) {
+        return prev.filter(p => p !== prompt);
+      }
+      if (prev.length >= 3) return prev;
+      return [...prev, prompt];
     });
-  };
+  }
+
+  function updateAnswer(prompt: string, value: string) {
+    setAnswers(prev => ({ ...prev, [prompt]: value }));
+  }
 
   const handleSave = () => {
     startTransition(async () => {
       await saveLifeAnswers(
-        PROMPTS.map((prompt, index) => ({
+        selected.map((prompt, index) => ({
           prompt,
-          answer: answers[index],
+          answer: answers[prompt] || '',
           displayOrder: index + 1,
         }))
       );
     });
   };
+
+  const canSubmit = selected.length === 3 && selected.every(p => (answers[p]?.trim().length || 0) > 0);
 
   return (
     <div className="screen" style={{ padding: '0 0 60px 0' }}>
@@ -47,150 +62,129 @@ export default function LifeAnswersPage() {
 
       <div style={{ padding: '40px 24px 0' }}>
         {/* Step row */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-system)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: 'var(--gray-quiet)',
-            }}
-          >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{
+            fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+            letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
+          }}>
             STEP 8 OF 9
           </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-system)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: 'var(--gray-quiet)',
-            }}
-          >
-            PUBLIC — SHOWN ON YOUR PROFILE
+          <span style={{
+            fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+            letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
+          }}>
+            PUBLIC
           </span>
         </div>
 
         {/* Title */}
-        <h1
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 14,
-            fontWeight: 500,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-true)',
-            marginTop: 28,
-          }}
-        >
-          THREE QUESTIONS, IN YOUR OWN WORDS
+        <h1 style={{
+          fontFamily: 'var(--font-system)', fontSize: 14, fontWeight: 500,
+          letterSpacing: '0.14em', textTransform: 'uppercase',
+          color: 'var(--ink-true)', marginTop: 28,
+        }}>
+          PICK THREE AND ANSWER THEM
         </h1>
 
         {/* Explanation */}
-        <p
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            lineHeight: 1.7,
-            color: 'var(--gray-quiet)',
-            marginTop: 12,
-          }}
-        >
-          These appear on your profile and are read by the matching engine. Write
-          at least a few sentences.
+        <p style={{
+          fontFamily: 'var(--font-system)', fontSize: 12.5, lineHeight: 1.7,
+          color: 'var(--gray-quiet)', marginTop: 12,
+        }}>
+          These appear on your profile and are read by the matching engine.
+          Choose the three you connect with most. Write at least a few sentences each.
         </p>
 
-        {/* Questions */}
-        <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 28 }}>
-          {PROMPTS.map((prompt, index) => (
-            <div key={prompt}>
-              {/* Prompt label */}
+        {/* Prompt selection — show when < 3 selected */}
+        {selected.length < 3 && (
+          <div style={{ marginTop: 24 }}>
+            <p style={{
+              fontFamily: 'var(--font-system)', fontSize: 11,
+              color: 'var(--gray-quiet)', marginBottom: 12,
+            }}>
+              {selected.length} of 3 chosen
+            </p>
+            {ALL_PROMPTS.filter(p => !selected.includes(p)).map(prompt => (
               <div
+                key={prompt}
+                onClick={() => togglePrompt(prompt)}
                 style={{
+                  padding: '14px 0',
+                  borderBottom: '1px solid var(--rule)',
+                  cursor: 'pointer',
                   fontFamily: 'var(--font-system)',
-                  fontSize: 10,
-                  fontWeight: 500,
-                  letterSpacing: '0.16em',
-                  textTransform: 'uppercase',
+                  fontSize: 14,
                   color: 'var(--gray-quiet)',
-                  marginBottom: 10,
                 }}
               >
                 {prompt}
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* Textarea */}
-              <textarea
-                value={answers[index]}
-                onChange={(e) => updateAnswer(index, e.target.value)}
-                style={{
-                  fontFamily: 'var(--font-human)',
-                  fontSize: 18.5,
-                  lineHeight: 1.62,
-                  color: 'var(--ink-human)',
-                  width: '100%',
-                  minHeight: 120,
-                  border: '1px solid var(--rule)',
-                  padding: 16,
-                  resize: 'none',
-                  background: 'var(--paper)',
-                  outline: 'none',
-                }}
-              />
+        {/* Selected prompts with text areas */}
+        {selected.length > 0 && (
+          <div style={{ marginTop: 28 }}>
+            {selected.map((prompt, index) => (
+              <div key={prompt} style={{ marginTop: index === 0 ? 0 : 28 }}>
+                {/* Prompt label with remove option */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{
+                    fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+                    letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
+                  }}>
+                    {prompt}
+                  </span>
+                  <span
+                    onClick={() => setSelected(prev => prev.filter(p => p !== prompt))}
+                    style={{
+                      fontFamily: 'var(--font-system)', fontSize: 11,
+                      color: 'var(--gray-quiet)', cursor: 'pointer',
+                    }}
+                  >
+                    change
+                  </span>
+                </div>
 
-              {/* Word count */}
-              <div
-                style={{
-                  fontFamily: 'var(--font-system)',
-                  fontSize: 10,
-                  color: 'var(--gray-quiet)',
-                  marginTop: 6,
-                }}
-              >
-                ~{countWords(answers[index])} words
+                {/* Textarea */}
+                <textarea
+                  value={answers[prompt] || ''}
+                  onChange={(e) => updateAnswer(prompt, e.target.value)}
+                  placeholder="write at least a few sentences..."
+                  style={{
+                    fontFamily: 'var(--font-human)', fontSize: 17, lineHeight: 1.55,
+                    color: 'var(--ink-human)', width: '100%', minHeight: 120,
+                    border: '1px solid var(--rule)', padding: 16, resize: 'none',
+                    background: 'var(--paper)', outline: 'none',
+                  }}
+                />
+
+                {/* Word count */}
+                <div style={{
+                  fontFamily: 'var(--font-system)', fontSize: 10,
+                  color: 'var(--gray-quiet)', marginTop: 6,
+                }}>
+                  ~{countWords(answers[prompt] || '')} words
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* Footer button */}
+        {/* Submit */}
         <button
           onClick={handleSave}
-          disabled={isPending}
+          disabled={isPending || !canSubmit}
           style={{
-            width: '100%',
-            border: '1px solid var(--ink-true)',
-            background: 'transparent',
-            fontFamily: 'var(--font-system)',
-            fontSize: 14,
-            color: 'var(--ink-true)',
-            padding: '14px 0',
-            cursor: isPending ? 'wait' : 'pointer',
-            marginTop: 28,
-            opacity: isPending ? 0.5 : 1,
-            transition: 'background-color 0.15s ease, color 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            if (!isPending) {
-              e.currentTarget.style.backgroundColor = 'var(--ink-true)';
-              e.currentTarget.style.color = 'var(--paper)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = 'var(--ink-true)';
+            width: '100%', padding: 15, marginTop: 32,
+            background: (isPending || !canSubmit) ? 'var(--gray-quiet)' : 'var(--ink-true)',
+            color: 'var(--paper)', fontFamily: 'var(--font-system)',
+            fontSize: 13.5, fontWeight: 500, border: 'none',
+            cursor: (isPending || !canSubmit) ? 'default' : 'pointer',
           }}
         >
-          {isPending ? 'saving...' : 'save and continue'}
+          {isPending ? 'saving...' : canSubmit ? 'save and continue' : `pick ${3 - selected.length} more`}
         </button>
       </div>
 
