@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { users, profiles, lifeBasics, rankedQualities, rankedValues, lifeAnswers } from '@/lib/db/schema';
+import { users, profiles, lifeBasics, rankedQualities, rankedValues, lifeAnswers, lifeSignals } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
 import { and, eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
@@ -287,6 +287,40 @@ export async function completeOnboarding() {
   const user = await getUser();
   if (!user) redirect('/login');
 
+  await db.update(users)
+    .set({ onboardingComplete: true, onboardingStep: 10 })
+    .where(eq(users.id, user.id));
+
+  redirect('/drought');
+}
+
+export async function savePhotos(photos: { theme: string; url: string }[]) {
+  const user = await getUser();
+  if (!user) redirect('/login');
+
+  const [profile] = await db.select({ id: profiles.id })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1);
+
+  if (!profile) redirect('/onboarding/identity');
+
+  // Delete existing life_signals photos for this profile
+  await db.delete(lifeSignals).where(eq(lifeSignals.profileId, profile.id));
+
+  // Insert new ones
+  if (photos.length > 0) {
+    await db.insert(lifeSignals).values(
+      photos.map(p => ({
+        profileId: profile.id,
+        type: p.theme,
+        photoUrl: p.url,
+        caption: p.theme,
+      }))
+    );
+  }
+
+  // Mark onboarding complete
   await db.update(users)
     .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
