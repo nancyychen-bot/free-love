@@ -1,8 +1,18 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 export default function StatusBar() {
-  const now = new Date();
-  const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    const update = () => {
+      setTime(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+    };
+    update();
+    const id = setInterval(update, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <div
@@ -16,7 +26,7 @@ export default function StatusBar() {
         paddingBottom: 0,
       }}
     >
-      <span className="type-status-bar">{time}</span>
+      <span className="type-status-bar" suppressHydrationWarning>{time || ' '}</span>
       <span className="type-status-bar">free love</span>
     </div>
   );
