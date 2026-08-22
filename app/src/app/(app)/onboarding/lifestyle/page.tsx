@@ -16,9 +16,14 @@ const questions: QuestionDef[] = [
   { key: 'smoking', title: 'SMOKING', options: ['i smoke', "i don't smoke", 'i smoke sometimes'] },
   { key: 'drugs', title: 'DRUGS', options: ["i don't use drugs", 'cannabis', 'psychedelics', 'other'] },
   { key: 'lifestyle', title: 'LIFESTYLE', options: ['homebody', 'social', 'somewhere in between'] },
+  { key: 'sexuality', title: 'IN THE BEDROOM', options: ['vanilla', 'kinky'] },
 ];
 
-const MULTI_SELECT_KEYS = new Set(['drugs']);
+const KINK_OPTIONS = [
+  'dominant', 'submissive', 'switch', 'bdsm', 'rough', 'sensual', 'threesome', 'parties',
+];
+
+const MULTI_SELECT_KEYS = new Set(['drugs', 'kinks']);
 const EXCLUSIVE_OPTIONS: Record<string, string> = {
   drugs: "i don't use drugs",
 };
@@ -62,15 +67,32 @@ export default function LifestylePage() {
     setHardLines(prev => ({ ...prev, [questionKey]: !prev[questionKey] }));
   }
 
+  function toggleKink(kink: string) {
+    setMultiAnswers(prev => {
+      const current = prev['kinks'] ?? [];
+      const next = current.includes(kink)
+        ? current.filter(k => k !== kink)
+        : [...current, kink];
+      return { ...prev, kinks: next };
+    });
+  }
+
   async function handleSubmit() {
     setSubmitting(true);
-    const singleData = Object.entries(answers).map(([question, answer]) => ({
-      question,
-      answer,
-      isDealbreaker: !!hardLines[question],
-    }));
+    const singleData = Object.entries(answers).map(([question, answer]) => {
+      let finalAnswer = answer;
+      // Append kinks if kinky
+      if (question === 'sexuality' && answer === 'kinky' && (multiAnswers['kinks'] ?? []).length > 0) {
+        finalAnswer = `kinky: ${(multiAnswers['kinks'] ?? []).join(', ')}`;
+      }
+      return {
+        question,
+        answer: finalAnswer,
+        isDealbreaker: !!hardLines[question],
+      };
+    });
     const multiData = Object.entries(multiAnswers)
-      .filter(([, options]) => options.length > 0)
+      .filter(([key, options]) => key !== 'kinks' && options.length > 0)
       .map(([question, options]) => ({
         question,
         answer: options.join(', '),
@@ -223,6 +245,39 @@ export default function LifestylePage() {
                   </div>
                 );
               })}
+
+              {/* Kink options — shown when "kinky" is selected */}
+              {q.key === 'sexuality' && answers.sexuality === 'kinky' && (
+                <div style={{ marginTop: 16 }}>
+                  <p style={{
+                    fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+                    letterSpacing: '0.16em', textTransform: 'uppercase',
+                    color: 'var(--gray-quiet)', marginBottom: 10,
+                  }}>
+                    SELECT ANY THAT APPLY
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {KINK_OPTIONS.map(kink => {
+                      const isKinkSelected = (multiAnswers['kinks'] ?? []).includes(kink);
+                      return (
+                        <button
+                          key={kink}
+                          onClick={() => toggleKink(kink)}
+                          style={{
+                            fontFamily: 'var(--font-system)', fontSize: 13.5,
+                            color: isKinkSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
+                            border: `1px solid ${isKinkSelected ? 'var(--ink-true)' : 'var(--rule)'}`,
+                            background: 'transparent', padding: '9px 12px',
+                            cursor: 'pointer', lineHeight: 1,
+                          }}
+                        >
+                          {kink}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Dealbreaker checkbox — hidden on flexible/middle-ground answers */}
               {(() => {

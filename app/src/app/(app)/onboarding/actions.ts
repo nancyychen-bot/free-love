@@ -83,7 +83,7 @@ export async function saveDealbreaker(formData: FormData) {
 
 const PARTNERSHIP_KEYS = ['marriage', 'monogamy', 'kids_have', 'kids_want'];
 const BELIEFS_KEYS = ['religion', 'politics'];
-const LIFESTYLE_KEYS = ['drinking', 'smoking', 'drugs', 'lifestyle'];
+const LIFESTYLE_KEYS = ['drinking', 'smoking', 'drugs', 'lifestyle', 'sexuality'];
 
 export async function savePartnership(
   data: { question: string; answer: string; isDealbreaker: boolean }[]
