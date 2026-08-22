@@ -12,16 +12,21 @@ interface QuestionDef {
 }
 
 const questions: QuestionDef[] = [
-  { key: 'kids', title: 'KIDS', options: ['i have kids', 'i want kids', "i don't want kids"] },
   { key: 'marriage', title: 'MARRIAGE', options: ['i want to get married', "i'm happy without marriage", 'not sure yet'] },
   { key: 'monogamy', title: 'MONOGAMY', options: ['monogamous', 'open to open', 'poly'] },
-  { key: 'smoking', title: 'SMOKING', options: ['i smoke', "i don't smoke", 'i smoke sometimes'] },
-  { key: 'drinking', title: 'DRINKING', options: ['i drink', "i don't drink", 'i drink socially'] },
-  { key: 'drugs', title: 'DRUGS', options: ["i don't use drugs", 'cannabis', 'psychedelics', 'other'] },
+  { key: 'kids', title: 'KIDS', options: ['i have kids', 'i want kids', "i don't want kids"] },
   { key: 'religion', title: 'RELIGION', options: ['important to me', 'not important', 'spiritual but not religious'] },
   { key: 'politics', title: 'POLITICS', options: ['progressive', 'moderate', 'conservative', 'independent', 'apolitical'] },
+  { key: 'drinking', title: 'DRINKING', options: ['i drink', "i don't drink", 'i drink socially'] },
+  { key: 'smoking', title: 'SMOKING', options: ['i smoke', "i don't smoke", 'i smoke sometimes'] },
+  { key: 'drugs', title: 'DRUGS', options: ["i don't use drugs", 'cannabis', 'psychedelics', 'other'] },
   { key: 'lifestyle', title: 'LIFESTYLE', options: ['homebody', 'social', 'somewhere in between'] },
 ];
+
+const MULTI_SELECT_KEYS = new Set(['drugs']);
+const EXCLUSIVE_OPTIONS: Record<string, string> = {
+  drugs: "i don't use drugs",
+};
 
 const religionOptions = [
   'Christian — Catholic',
@@ -38,13 +43,41 @@ const religionOptions = [
 
 export default function DealbreakersPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [multiAnswers, setMultiAnswers] = useState<Record<string, string[]>>({});
   const [hardLines, setHardLines] = useState<Record<string, boolean>>({});
   const [religionDetail, setReligionDetail] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  function isOptionSelected(questionKey: string, option: string): boolean {
+    if (MULTI_SELECT_KEYS.has(questionKey)) {
+      return (multiAnswers[questionKey] ?? []).includes(option);
+    }
+    return answers[questionKey] === option;
+  }
+
   function selectAnswer(questionKey: string, option: string) {
+    if (MULTI_SELECT_KEYS.has(questionKey)) {
+      // Multi-select behavior
+      setMultiAnswers(prev => {
+        const current = prev[questionKey] ?? [];
+        const exclusive = EXCLUSIVE_OPTIONS[questionKey];
+        let next: string[];
+        if (current.includes(option)) {
+          // Deselect
+          next = current.filter(o => o !== option);
+        } else if (option === exclusive) {
+          // Selecting the exclusive option (e.g., "i don't use drugs") clears others
+          next = [option];
+        } else {
+          // Selecting a non-exclusive option — remove exclusive if it was selected
+          next = [...current.filter(o => o !== exclusive), option];
+        }
+        return { ...prev, [questionKey]: next };
+      });
+      return;
+    }
+
     setAnswers(prev => ({ ...prev, [questionKey]: option }));
-    // Clear religion detail if they change away from "important to me"
     if (questionKey === 'religion' && option !== 'important to me') {
       setReligionDetail('');
     }
@@ -56,8 +89,7 @@ export default function DealbreakersPage() {
 
   async function handleSubmit() {
     setSubmitting(true);
-    const data = Object.entries(answers).map(([question, answer]) => {
-      // Append religion detail if applicable
+    const singleData = Object.entries(answers).map(([question, answer]) => {
       const finalAnswer =
         question === 'religion' && answer === 'important to me' && religionDetail
           ? `important to me — ${religionDetail}`
@@ -68,7 +100,14 @@ export default function DealbreakersPage() {
         isDealbreaker: !!hardLines[question],
       };
     });
-    await saveAllDealbreakers(data);
+    const multiData = Object.entries(multiAnswers)
+      .filter(([, options]) => options.length > 0)
+      .map(([question, options]) => ({
+        question,
+        answer: options.join(', '),
+        isDealbreaker: !!hardLines[question],
+      }));
+    await saveAllDealbreakers([...singleData, ...multiData]);
   }
 
   return (
@@ -161,9 +200,24 @@ export default function DealbreakersPage() {
               {/* Hairline */}
               <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
 
+              {/* Multi-select hint */}
+              {MULTI_SELECT_KEYS.has(q.key) && (
+                <p
+                  style={{
+                    fontFamily: 'var(--font-system)',
+                    fontSize: 11,
+                    color: 'var(--gray-quiet)',
+                    marginTop: 8,
+                    marginBottom: 4,
+                  }}
+                >
+                  select any that apply
+                </p>
+              )}
+
               {/* Options */}
               {q.options.map((option, index) => {
-                const isSelected = answers[q.key] === option;
+                const isSelected = isOptionSelected(q.key, option);
                 const isLast = index === q.options.length - 1;
 
                 return (
