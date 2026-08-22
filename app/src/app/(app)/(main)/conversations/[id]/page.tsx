@@ -74,6 +74,7 @@ export default async function ConversationPage({
     <ChatClient
       conversationId={id}
       currentUserId={user.id}
+      otherUserId={otherUserId}
       otherName={otherProfile?.displayName || 'Someone'}
       otherPhoto={otherPhoto}
       initialMessages={serializedMessages}

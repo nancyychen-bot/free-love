@@ -4,32 +4,25 @@ import { db } from '@/lib/db';
 import { profiles, lifeAnswers, lifeSignals, rankedQualities, rankedValues } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
 import { eq, asc } from 'drizzle-orm';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 
-export default async function ProfilePage() {
+export default async function PublicProfilePage({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) {
   const user = await getUser();
   if (!user) redirect('/login');
+
+  const { userId } = await params;
 
   const [profile] = await db
     .select()
     .from(profiles)
-    .where(eq(profiles.userId, user.id))
+    .where(eq(profiles.userId, userId))
     .limit(1);
 
-  if (!profile) {
-    return (
-      <div className="screen">
-        <StatusBar />
-        <div style={{ padding: '20px 24px 14px', borderBottom: '1px solid var(--rule)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-system)', fontSize: 11, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--ink-true)' }}>MY PROFILE</span>
-          <BackButton href="/settings" />
-        </div>
-        <div style={{ padding: '40px 24px' }}>
-          <p style={{ fontFamily: 'var(--font-system)', fontSize: 13, color: 'var(--gray-quiet)' }}>Complete onboarding first.</p>
-        </div>
-      </div>
-    );
-  }
+  if (!profile) notFound();
 
   const answers = await db.select().from(lifeAnswers).where(eq(lifeAnswers.profileId, profile.id)).orderBy(asc(lifeAnswers.displayOrder));
   const photos = await db.select().from(lifeSignals).where(eq(lifeSignals.profileId, profile.id));
@@ -63,12 +56,12 @@ export default async function ProfilePage() {
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 14px', borderBottom: '1px solid var(--rule)' }}>
-        <span style={{ fontFamily: 'var(--font-system)', fontSize: 11, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--ink-true)' }}>MY PROFILE</span>
-        <BackButton href="/settings" />
+        <span style={{ fontFamily: 'var(--font-system)', fontSize: 11, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--ink-true)' }}>PROFILE</span>
+        <BackButton />
       </div>
 
       <div style={{ padding: '24px 24px 0' }}>
-        {/* Profile header — photo + name/age/location */}
+        {/* Profile header -- photo + name/age/location */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {profilePhoto ? (
             <div className="avatar-circle" style={{ width: 72, height: 72, minWidth: 72, overflow: 'hidden' }}>

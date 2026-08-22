@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import BackButton from '@/app/components/BackButton';
 import StatusBar from '@/app/components/StatusBar';
 
@@ -25,12 +26,14 @@ function formatTime(iso: string): string {
 export default function ChatClient({
   conversationId,
   currentUserId,
+  otherUserId,
   otherName,
   otherPhoto,
   initialMessages,
 }: {
   conversationId: string;
   currentUserId: string;
+  otherUserId: string;
   otherName: string;
   otherPhoto: string | null;
   initialMessages: Message[];
@@ -140,7 +143,7 @@ export default function ChatClient({
           borderBottom: '1px solid var(--rule)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Link href={`/profile/${otherUserId}`} style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           {otherPhoto ? (
             <div
               className="avatar-circle"
@@ -180,7 +183,7 @@ export default function ChatClient({
           >
             {otherName}
           </span>
-        </div>
+        </Link>
         <BackButton href="/home" />
       </div>
 
