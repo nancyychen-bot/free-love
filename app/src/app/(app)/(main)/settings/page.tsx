@@ -2,6 +2,7 @@ import Link from 'next/link';
 import StatusBar from '@/app/components/StatusBar';
 import BackButton from '@/app/components/BackButton';
 import LogoutButton from './logout-button';
+import CancelAccountButton from './cancel-button';
 
 const profileLinks = [
   { label: 'my profile', href: '/settings/profile' },
@@ -92,6 +93,12 @@ export default function SettingsPage() {
 
         {/* Log out */}
         <LogoutButton />
+
+        {/* Spacer */}
+        <div style={{ height: 16 }} />
+
+        {/* Cancel account */}
+        <CancelAccountButton />
       </div>
     </div>
   );
