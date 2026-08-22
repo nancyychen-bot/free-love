@@ -67,7 +67,7 @@ export default function HowThisWorksPage() {
           HOW THIS WORKS
         </span>
         <Link
-          href="/"
+          href="/home"
           style={{
             fontFamily: "var(--font-system)",
             fontSize: 13,

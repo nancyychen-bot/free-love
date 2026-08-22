@@ -4,14 +4,20 @@ import { getUser } from '@/lib/auth/get-user';
 import { eq, or, and, desc } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import StatusBar from '@/app/components/StatusBar';
-import Link from 'next/link';
 import HomeClient from './home-client';
 
 export default async function HomePage() {
   const user = await getUser();
   if (!user) redirect('/login');
 
-  // Get pending introductions for this user
+  // Get the user's profile
+  const [myProfile] = await db
+    .select({ displayName: profiles.displayName })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1);
+
+  // Get pending introductions
   const intros = await db
     .select()
     .from(introductions)
@@ -26,7 +32,7 @@ export default async function HomePage() {
     )
     .limit(3);
 
-  // For each intro, get the other person's profile + photos + life answers
+  // Get each intro's profile data
   const introData = await Promise.all(
     intros.map(async (intro) => {
       const otherUserId = intro.userAId === user.id ? intro.userBId : intro.userAId;
@@ -54,7 +60,7 @@ export default async function HomePage() {
       return {
         introId: intro.id,
         score: intro.score,
-        floorA: intro.floorA,
+        floorA: intro.userAId === user.id ? intro.floorA : intro.floorB,
         explanation: intro.explanation,
         expiresIn: `${daysLeft} day${daysLeft !== 1 ? 's' : ''}`,
         profile: {
@@ -68,18 +74,13 @@ export default async function HomePage() {
     })
   );
 
-  const validIntros = introData.filter(Boolean);
-
   // Get active conversations
   const convos = await db
     .select()
     .from(conversations)
     .where(
       and(
-        or(
-          eq(conversations.userAId, user.id),
-          eq(conversations.userBId, user.id)
-        ),
+        or(eq(conversations.userAId, user.id), eq(conversations.userBId, user.id)),
         eq(conversations.status, 'active')
       )
     );
@@ -87,7 +88,6 @@ export default async function HomePage() {
   const convoData = await Promise.all(
     convos.map(async (convo) => {
       const otherUserId = convo.userAId === user.id ? convo.userBId : convo.userAId;
-
       const [profile] = await db
         .select({ displayName: profiles.displayName })
         .from(profiles)
@@ -95,7 +95,7 @@ export default async function HomePage() {
         .limit(1);
 
       const [lastMsg] = await db
-        .select({ body: messages.body, createdAt: messages.createdAt })
+        .select({ body: messages.body })
         .from(messages)
         .where(eq(messages.conversationId, convo.id))
         .orderBy(desc(messages.createdAt))
@@ -104,44 +104,17 @@ export default async function HomePage() {
       return {
         id: convo.id,
         name: profile?.displayName || 'Someone',
-        lastMessage: lastMsg?.body || 'No messages yet',
-        createdAt: convo.createdAt,
+        lastMessage: lastMsg?.body || 'Start the conversation...',
       };
     })
   );
 
   return (
-    <div className="screen" style={{ padding: '0 0 40px 0' }}>
-      <StatusBar />
-
-      <HomeClient
-        introductions={validIntros}
-        conversations={convoData}
-        openConvoCount={convos.length}
-      />
-
-      {/* Footer navigation */}
-      <div style={{ padding: '40px 24px 0', borderTop: '1px solid var(--rule)' }}>
-        <div style={{
-          display: 'flex', flexDirection: 'column', gap: 14,
-        }}>
-          <Link href="/conversations" style={{
-            fontFamily: 'var(--font-system)', fontSize: 12.5, color: 'var(--ink-true)',
-          }}>
-            conversations{convoData.length > 0 ? ` (${convoData.length})` : ''}
-          </Link>
-          <Link href="/how-this-works" style={{
-            fontFamily: 'var(--font-system)', fontSize: 12.5, color: 'var(--gray-quiet)',
-          }}>
-            how this works
-          </Link>
-          <Link href="/manifesto" style={{
-            fontFamily: 'var(--font-system)', fontSize: 12.5, color: 'var(--gray-quiet)',
-          }}>
-            the manifesto
-          </Link>
-        </div>
-      </div>
-    </div>
+    <HomeClient
+      userName={myProfile?.displayName || 'there'}
+      introductions={introData.filter(Boolean)}
+      conversations={convoData}
+      openConvoCount={convos.length}
+    />
   );
 }

@@ -295,7 +295,7 @@ export default function ManifestoPage() {
             how this works
           </Link>
           <Link
-            href="/"
+            href="/home"
             style={{
               fontFamily: "var(--font-system)",
               fontSize: 11,
