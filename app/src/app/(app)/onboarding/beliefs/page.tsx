@@ -126,8 +126,8 @@ export default function BeliefsPage() {
             marginTop: 12,
           }}
         >
-          Answer honestly. Flag the ones that matter most — you&rsquo;ll only
-          match with people who share those answers.
+          Answer honestly. Mark any dealbreakers — we&rsquo;ll never match you across
+          one.
         </p>
 
         {/* Questions */}
@@ -233,36 +233,38 @@ export default function BeliefsPage() {
                 </div>
               )}
 
-              {/* Must-match checkbox */}
-              <div
-                onClick={() => toggleHardLine(q.key)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  marginTop: 16,
-                  cursor: 'pointer',
-                }}
-              >
+              {/* Dealbreaker checkbox — shown when an answer is selected */}
+              {answers[q.key] && (
                 <div
+                  onClick={() => toggleHardLine(q.key)}
                   style={{
-                    width: 15,
-                    height: 15,
-                    minWidth: 15,
-                    border: '1px solid var(--ink-true)',
-                    backgroundColor: hardLines[q.key] ? 'var(--ink-true)' : 'transparent',
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: 'var(--font-system)',
-                    fontSize: 15,
-                    color: 'var(--ink-true)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    marginTop: 16,
+                    cursor: 'pointer',
                   }}
                 >
-                  must match
-                </span>
-              </div>
+                  <div
+                    style={{
+                      width: 15,
+                      height: 15,
+                      minWidth: 15,
+                      border: '1px solid var(--ink-true)',
+                      backgroundColor: hardLines[q.key] ? 'var(--ink-true)' : 'transparent',
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-system)',
+                      fontSize: 15,
+                      color: 'var(--ink-true)',
+                    }}
+                  >
+                    dealbreaker
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>

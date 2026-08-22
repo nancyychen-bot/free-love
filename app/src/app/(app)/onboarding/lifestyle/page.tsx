@@ -22,6 +22,7 @@ const MULTI_SELECT_KEYS = new Set(['drugs']);
 const EXCLUSIVE_OPTIONS: Record<string, string> = {
   drugs: "i don't use drugs",
 };
+const FLEXIBLE_ANSWERS = new Set(['somewhere in between', 'i drink socially', 'i smoke sometimes']);
 
 export default function LifestylePage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -142,8 +143,8 @@ export default function LifestylePage() {
             marginTop: 12,
           }}
         >
-          Answer honestly. Flag the ones that matter most — you&rsquo;ll only
-          match with people who share those answers.
+          Answer honestly. Mark any dealbreakers — we&rsquo;ll never match you across
+          one.
         </p>
 
         {/* Questions */}
@@ -223,36 +224,45 @@ export default function LifestylePage() {
                 );
               })}
 
-              {/* Must-match checkbox */}
-              <div
-                onClick={() => toggleHardLine(q.key)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  marginTop: 16,
-                  cursor: 'pointer',
-                }}
-              >
-                <div
-                  style={{
-                    width: 15,
-                    height: 15,
-                    minWidth: 15,
-                    border: '1px solid var(--ink-true)',
-                    backgroundColor: hardLines[q.key] ? 'var(--ink-true)' : 'transparent',
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: 'var(--font-system)',
-                    fontSize: 15,
-                    color: 'var(--ink-true)',
-                  }}
-                >
-                  must match
-                </span>
-              </div>
+              {/* Dealbreaker checkbox — hidden on flexible/middle-ground answers */}
+              {(() => {
+                const selected = MULTI_SELECT_KEYS.has(q.key)
+                  ? (multiAnswers[q.key] ?? []).length > 0
+                  : !!answers[q.key];
+                const isFlexible = !MULTI_SELECT_KEYS.has(q.key) && FLEXIBLE_ANSWERS.has(answers[q.key] ?? '');
+                if (!selected || isFlexible) return null;
+                return (
+                  <div
+                    onClick={() => toggleHardLine(q.key)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      marginTop: 16,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 15,
+                        height: 15,
+                        minWidth: 15,
+                        border: '1px solid var(--ink-true)',
+                        backgroundColor: hardLines[q.key] ? 'var(--ink-true)' : 'transparent',
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-system)',
+                        fontSize: 15,
+                        color: 'var(--ink-true)',
+                      }}
+                    >
+                      dealbreaker
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
           ))}
         </div>
