@@ -4,7 +4,6 @@ import { signPledge } from '../actions';
 
 const pledgeLines = [
   "I'm here for something real — not a hookup, not a distraction, not a game.",
-  "I'm here to find a partner — and to be met as one myself.",
   "My profile is honest. I show up as who I actually am.",
   "When a conversation isn't working, I'll say so, not vanish.",
   "I won't harass, coerce, or send anything unsolicited.",
