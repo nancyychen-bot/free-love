@@ -208,16 +208,8 @@ export default function HomeClient({
         <div style={{ borderTop: '1px solid var(--rule)' }} />
       </div>
 
-      {/* Footer */}
-      <div style={{ padding: '20px 24px 40px' }}>
-        <p style={{
-          fontFamily: 'var(--font-system)', fontSize: 11, color: 'var(--gray-quiet)', lineHeight: 1.8,
-        }}>
-          <Link href="/how-this-works" style={{ color: 'var(--gray-quiet)' }}>how this works</Link>
-          {' · '}
-          <Link href="/manifesto" style={{ color: 'var(--gray-quiet)' }}>the manifesto</Link>
-        </p>
-      </div>
+      {/* Bottom padding */}
+      <div style={{ height: 40 }} />
     </div>
   );
 }

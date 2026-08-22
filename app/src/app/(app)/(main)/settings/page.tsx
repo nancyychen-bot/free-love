@@ -7,7 +7,7 @@ import CancelAccountButton from './cancel-button';
 const profileLinks = [
   { label: 'my profile', href: '/settings/profile' },
   { label: 'my qualities and values', href: '/settings/qualities' },
-  { label: 'my dealbreakers', href: '/settings/dealbreakers' },
+  { label: 'my preferences & dealbreakers', href: '/settings/dealbreakers' },
   { label: 'radius', href: '/settings/radius' },
 ];
 

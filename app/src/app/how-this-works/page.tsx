@@ -60,6 +60,31 @@ export default function HowThisWorksPage() {
       </div>
 
       <div style={{ padding: "26px 24px 22px" }}>
+        {/* ── Intro ────────────────────────────────────────── */}
+        <p
+          style={{
+            fontFamily: "var(--font-human)",
+            fontWeight: 300,
+            fontSize: 22,
+            lineHeight: 1.35,
+            color: "var(--ink-human)",
+            marginBottom: 14,
+          }}
+        >
+          A matchmaker who works for you, not against you.
+        </p>
+        <p
+          style={{
+            fontFamily: "var(--font-system)",
+            fontSize: 12.5,
+            lineHeight: 1.7,
+            color: "var(--gray-quiet)",
+            marginBottom: 28,
+          }}
+        >
+          Free Love is a non-profit dating app. We use what you told us about yourself — your values, your dealbreakers, what you wrote in your own words — to introduce you to someone worth meeting. We charge at cost, publish our finances, and the code that matches you is open source. If we can not find someone who clears your bar, we give you nothing rather than filler.
+        </p>
+
         {/* ── Receipts ──────────────────────────────────────── */}
         <div
           style={{
