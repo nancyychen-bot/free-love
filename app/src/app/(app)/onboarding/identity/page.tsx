@@ -9,6 +9,61 @@ const genderOptions = ['woman', 'man', 'non-binary'];
 const orientationOptions = ['straight', 'gay', 'lesbian', 'bisexual', 'queer', 'other'];
 const seekingOptions = ['women', 'men', 'non-binary people'];
 
+const nycNeighborhoods = [
+  // Manhattan
+  'Battery Park City',
+  'Chelsea',
+  'Chinatown',
+  'East Village',
+  'Financial District',
+  'Flatiron',
+  'Gramercy',
+  'Greenwich Village',
+  'Harlem',
+  "Hell's Kitchen",
+  'Lower East Side',
+  'Midtown',
+  'Morningside Heights',
+  'Murray Hill',
+  'NoHo',
+  'NoLIta',
+  'SoHo',
+  'Tribeca',
+  'Upper East Side',
+  'Upper West Side',
+  'Washington Heights',
+  'West Village',
+  // Brooklyn
+  'Bed-Stuy',
+  'Boerum Hill',
+  'Brooklyn Heights',
+  'Bushwick',
+  'Carroll Gardens',
+  'Clinton Hill',
+  'Cobble Hill',
+  'Crown Heights',
+  'DUMBO',
+  'Fort Greene',
+  'Gowanus',
+  'Greenpoint',
+  'Park Slope',
+  'Prospect Heights',
+  'Prospect Lefferts Gardens',
+  'Red Hook',
+  'Sunset Park',
+  'Williamsburg',
+  'Windsor Terrace',
+  // Queens
+  'Astoria',
+  'Long Island City',
+  'Ridgewood',
+  'Sunnyside',
+  'Woodside',
+  // The Bronx
+  'Riverdale',
+  'South Bronx',
+];
+
 const labelStyle = {
   display: 'block' as const,
   fontFamily: 'var(--font-system)',
@@ -221,14 +276,23 @@ export default function IdentityPage() {
 
           {/* Location */}
           <div style={{ marginBottom: 24 }}>
-            <label htmlFor="locationName" style={labelStyle}>Your city / neighbourhood</label>
-            <input
+            <label htmlFor="locationName" style={labelStyle}>Which neighborhood do you live in, New York?</label>
+            <select
               id="locationName"
               name="locationName"
-              type="text"
-              placeholder="e.g. bed-stuy"
-              style={inputStyle}
-            />
+              required
+              defaultValue=""
+              style={{
+                ...inputStyle,
+                appearance: 'none',
+                WebkitAppearance: 'none',
+              }}
+            >
+              <option value="" disabled>select</option>
+              {nycNeighborhoods.map(n => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
           </div>
 
           {/* Submit */}
