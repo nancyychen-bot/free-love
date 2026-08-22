@@ -83,7 +83,7 @@ export default function SignIn() {
             color: 'var(--ink-true)',
             fontFamily: 'var(--font-system)',
             fontSize: 13.5,
-            textAlign: 'center',
+            textAlign: 'center' as const,
             transition: 'background 200ms ease, color 200ms ease',
           }}
           onMouseEnter={(e) => {
@@ -95,7 +95,7 @@ export default function SignIn() {
             e.currentTarget.style.color = 'var(--ink-true)';
           }}
         >
-          i already have an account
+          login / signup
         </Link>
 
         {/* Footer row */}
