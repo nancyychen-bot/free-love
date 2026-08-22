@@ -5,7 +5,7 @@ import { users, profiles, lifeBasics, rankedQualities, rankedValues, lifeAnswers
 import { getUser } from '@/lib/auth/get-user';
 import { and, eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
-import { ensureSeedProfile } from '@/lib/seed-profiles';
+import { seedUserData } from '@/lib/seed-user-data';
 
 export async function signPledge() {
   const user = await getUser();
@@ -292,34 +292,11 @@ export async function completeOnboarding() {
     .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
 
-  // Seed full test data — intro + conversations
+  // Seed test data directly — intro + conversations
   try {
-    await fetch(`${process.env.NEXT_PUBLIC_URL || 'https://free-love-prototype.vercel.app'}/api/seed-full`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.email }),
-    });
+    await seedUserData(user.id, user.email);
   } catch {
-    // Fallback: try direct seed
-    try {
-      const seedUserId = await ensureSeedProfile();
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 5);
-
-      await db.insert(introductions).values({
-        userAId: user.id,
-        userBId: seedUserId,
-        score: '0.81',
-        floorA: '0.74',
-        floorB: '0.74',
-        explanation: 'You both ranked warmth and humor highest. Neither of you flagged a dealbreaker the other holds. Her answer about what a good day looks like and yours both describe small, quiet moments over grand gestures.',
-        source: 'engine',
-        status: 'pending',
-        expiresAt,
-      });
-    } catch {
-      // continue silently
-    }
+    // continue silently if seeding fails
   }
 
   redirect('/home');
