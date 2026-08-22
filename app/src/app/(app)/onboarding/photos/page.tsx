@@ -5,7 +5,7 @@ import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
 import { savePhotos } from '../actions';
 
-const REQUIRED_THEME = 'just me';
+const REQUIRED_THEMES = ['just me', 'me, again'];
 
 const OPTIONAL_THEMES = [
   'me in my element',
@@ -23,8 +23,7 @@ const OPTIONAL_THEMES = [
   'a place I\'ve traveled to',
 ];
 
-const MIN_OPTIONAL = 4;
-const MIN_TOTAL = MIN_OPTIONAL + 1; // including "just me"
+const MIN_OPTIONAL = 3; // 2 required + 3 optional = 5 minimum
 
 export default function PhotosPage() {
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
@@ -34,7 +33,7 @@ export default function PhotosPage() {
   const [isPending, startTransition] = useTransition();
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
-  const allThemes = [REQUIRED_THEME, ...selectedThemes];
+  const allThemes = [...REQUIRED_THEMES, ...selectedThemes];
   const uploadedCount = Object.keys(uploadedUrls).length;
   const allUploaded = allThemes.every((t) => uploadedUrls[t]);
 
@@ -143,14 +142,14 @@ export default function PhotosPage() {
             marginTop: 12,
           }}
         >
-          {phase === 'choose'
-            ? "Pick at least five themes. We’d love to see your face in at least one — but which ones you choose is up to you."
+          {phase === ‘choose’
+            ? "Two face photos are required. Pick at least three more themes — as many as you like. The more you share, the more someone can see who you are."
             : "Upload a photo for each theme. Tap a box to choose a file."}
         </p>
 
         {phase === 'choose' && (
           <>
-            {/* Required theme */}
+            {/* Required themes */}
             <div style={{ marginTop: 28 }}>
               <div
                 style={{
@@ -163,23 +162,24 @@ export default function PhotosPage() {
                   marginBottom: 12,
                 }}
               >
-                REQUIRED
+                TWO FACE PHOTOS — REQUIRED
               </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-system)',
-                  fontSize: 13.5,
-                  color: 'var(--ink-true)',
-                  border: '1px solid var(--ink-true)',
-                  padding: '9px 12px',
-                  lineHeight: 1,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                {REQUIRED_THEME}
-                <span style={{ fontSize: 11, color: 'var(--gray-quiet)' }}>(locked)</span>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {REQUIRED_THEMES.map(theme => (
+                  <div
+                    key={theme}
+                    style={{
+                      fontFamily: 'var(--font-system)',
+                      fontSize: 13.5,
+                      color: 'var(--ink-true)',
+                      border: '1px solid var(--ink-true)',
+                      padding: '9px 12px',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {theme}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -217,7 +217,7 @@ export default function PhotosPage() {
                         : 'var(--gray-quiet)',
                   }}
                 >
-                  {selectedThemes.length} OF {MIN_OPTIONAL} CHOSEN
+                  {selectedThemes.length} CHOSEN{selectedThemes.length < MIN_OPTIONAL ? ` (${MIN_OPTIONAL - selectedThemes.length} MORE)` : ''}
                 </span>
               </div>
 
@@ -316,8 +316,8 @@ export default function PhotosPage() {
                       }}
                     >
                       {theme}
-                      {theme === REQUIRED_THEME && (
-                        <span style={{ marginLeft: 6 }}>(required)</span>
+                      {REQUIRED_THEMES.includes(theme) && (
+                        <span style={{ marginLeft: 6 }}>(face photo)</span>
                       )}
                     </div>
 
