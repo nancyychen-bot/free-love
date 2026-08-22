@@ -6,17 +6,18 @@ import FooterLink from '@/app/components/FooterLink';
 import { saveValues } from '../actions';
 
 const DEFAULT_RANKED = [
-  'open-mindedness',
-  'loyalty',
-  'independence',
-  'intellectual curiosity',
-  'authenticity',
+  'family',
+  'freedom',
+  'growth',
+  'honesty',
+  'adventure',
 ];
 const DEFAULT_UNRANKED = [
-  'discipline',
-  'spirituality',
-  'family orientation',
-  'generosity',
+  'faith',
+  'security',
+  'creativity',
+  'justice',
+  'intellectual life',
 ];
 
 export default function ValuesPage() {
