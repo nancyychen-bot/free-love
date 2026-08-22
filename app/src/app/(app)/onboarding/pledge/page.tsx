@@ -7,9 +7,9 @@ const pledgeLines = [
   "Not a hookup. Not a distraction. Not a game.",
   "Whether it becomes a short relationship or a long one, I'm here to meet a real person — and be met as one myself.",
   "I'll show up as who I actually am. My profile is honest.",
-  "I'll be respectful, and honest, even when it's easier not to be.",
-  "I won't harass, coerce, or send anything nobody asked for.",
+  "I'll be respectful, even when it's easier not to be.",
   "When a conversation isn't working, I'll say so — I won't just vanish.",
+  "I won't harass, coerce, or send anything nobody asked for.",
   "If something unsafe happens, I'll speak up. I trust it'll be taken seriously.",
   "I understand that breaking this ends my account, permanently.",
 ];
