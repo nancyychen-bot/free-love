@@ -4,13 +4,14 @@ import { getUser } from "./get-user";
 const stepRoutes: Record<number, string> = {
   1: "/onboarding/pledge",
   2: "/onboarding/identity",
-  3: "/onboarding/partnership",
-  4: "/onboarding/beliefs",
-  5: "/onboarding/lifestyle",
-  6: "/onboarding/qualities",
-  7: "/onboarding/values",
-  8: "/onboarding/life-answers",
-  9: "/onboarding/photos",
+  3: "/onboarding/physical",
+  4: "/onboarding/partnership",
+  5: "/onboarding/beliefs",
+  6: "/onboarding/lifestyle",
+  7: "/onboarding/qualities",
+  8: "/onboarding/values",
+  9: "/onboarding/life-answers",
+  10: "/onboarding/photos",
 };
 
 /**

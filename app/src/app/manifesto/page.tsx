@@ -45,8 +45,8 @@ const principles = [
   },
   {
     number: "06",
-    statement: "Photos are part of the picture, never the first thing you judge.",
-    body: "Profiles reveal how someone lives — their music, their spaces, what they’re reading, where they feel at home. Photos are present, never the whole picture.",
+    statement: "The whole person — how they think, how they live, and yes, what they look like.",
+    body: "We match on all of it, because pretending attraction doesn’t matter would be dishonest. Physical compatibility is one real dimension of matchmaking alongside values, depth, and lifestyle.",
   },
   {
     number: "07",

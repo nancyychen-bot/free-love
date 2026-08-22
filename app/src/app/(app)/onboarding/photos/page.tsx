@@ -89,7 +89,7 @@ export default function PhotosPage() {
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
             letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
           }}>
-            STEP 9 OF 9
+            STEP 10 OF 10
           </span>
           <span style={{
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,

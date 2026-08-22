@@ -33,7 +33,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push('/onboarding/pledge');
+      router.push('/onboarding/intro');
     } catch {
       setError('Something went wrong');
       setLoading(false);

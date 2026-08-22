@@ -34,7 +34,7 @@ export default function PledgePage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 1 OF 9
+            STEP 1 OF 10
           </span>
           <span
             style={{
