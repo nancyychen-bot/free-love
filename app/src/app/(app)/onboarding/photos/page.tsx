@@ -20,6 +20,7 @@ const OPTIONAL_THEMES = [
   'my people',
   'my pet(s)',
   'my favorite place',
+  'a place I\'ve traveled to',
 ];
 
 const MIN_OPTIONAL = 4;
