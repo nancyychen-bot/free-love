@@ -81,7 +81,7 @@ export async function saveDealbreaker(formData: FormData) {
   });
 }
 
-const PHYSICAL_KEYS = ['height', 'body_type', 'ethnicity', 'fitness', 'height_preference', 'body_type_preference', 'ethnicity_preference', 'fitness_preference'];
+const PHYSICAL_KEYS = ['height', 'body_type', 'hair_color', 'ethnicity', 'fitness', 'height_preference', 'body_type_preference', 'hair_color_preference', 'ethnicity_preference', 'fitness_preference'];
 const PARTNERSHIP_KEYS = ['marriage', 'monogamy', 'kids_have', 'kids_want'];
 const BELIEFS_KEYS = ['religion', 'politics'];
 const LIFESTYLE_KEYS = ['drinking', 'smoking', 'drugs', 'lifestyle', 'sexuality'];

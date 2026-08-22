@@ -14,6 +14,9 @@ const BODY_PREF_OPTIONS = ['slim', 'athletic', 'average', 'curvy', 'plus-size', 
 const ETHNICITY_OPTIONS = ['Black', 'White', 'Hispanic / Latino', 'East Asian', 'South Asian', 'Southeast Asian', 'Middle Eastern', 'Mixed', 'other'];
 const ETHNICITY_PREF_OPTIONS = ['Black', 'White', 'Hispanic / Latino', 'East Asian', 'South Asian', 'Southeast Asian', 'Middle Eastern', 'Mixed', 'other', 'no preference'];
 
+const HAIR_OPTIONS = ['black', 'brown', 'blonde', 'red', 'gray', 'bald', 'other'];
+const HAIR_PREF_OPTIONS = ['black', 'brown', 'blonde', 'red', 'gray', 'bald', 'other', 'no preference'];
+
 const FITNESS_OPTIONS = ['very active', 'active', 'moderate', 'not very active'];
 const FITNESS_PREF_OPTIONS = ['very active', 'active', 'moderate', 'not very active', 'no preference'];
 
@@ -21,11 +24,13 @@ export default function PhysicalPage() {
   const [aboutYou, setAboutYou] = useState<{
     height: string;
     body_type: string;
+    hair_color: string;
     ethnicity: string[];
     fitness: string;
   }>({
     height: '',
     body_type: '',
+    hair_color: '',
     ethnicity: [],
     fitness: '',
   });
@@ -33,18 +38,20 @@ export default function PhysicalPage() {
   const [preferences, setPreferences] = useState<{
     height_preference: string;
     body_type_preference: string[];
+    hair_color_preference: string[];
     ethnicity_preference: string[];
     fitness_preference: string[];
   }>({
     height_preference: '',
     body_type_preference: [],
+    hair_color_preference: [],
     ethnicity_preference: [],
     fitness_preference: [],
   });
 
   const [submitting, setSubmitting] = useState(false);
 
-  function selectAboutSingle(key: 'height' | 'body_type' | 'fitness', value: string) {
+  function selectAboutSingle(key: 'height' | 'body_type' | 'hair_color' | 'fitness', value: string) {
     setAboutYou(prev => ({ ...prev, [key]: value }));
   }
 
@@ -62,7 +69,7 @@ export default function PhysicalPage() {
     setPreferences(prev => ({ ...prev, [key]: value }));
   }
 
-  function togglePrefMulti(key: 'body_type_preference' | 'ethnicity_preference' | 'fitness_preference', value: string) {
+  function togglePrefMulti(key: 'body_type_preference' | 'hair_color_preference' | 'ethnicity_preference' | 'fitness_preference', value: string) {
     setPreferences(prev => {
       const current = prev[key];
       if (value === 'no preference') {
@@ -80,10 +87,12 @@ export default function PhysicalPage() {
     const data = [
       { question: 'height', answer: aboutYou.height, isDealbreaker: false },
       { question: 'body_type', answer: aboutYou.body_type, isDealbreaker: false },
+      { question: 'hair_color', answer: aboutYou.hair_color, isDealbreaker: false },
       { question: 'ethnicity', answer: aboutYou.ethnicity.join(', '), isDealbreaker: false },
       { question: 'fitness', answer: aboutYou.fitness, isDealbreaker: false },
       { question: 'height_preference', answer: preferences.height_preference, isDealbreaker: false },
       { question: 'body_type_preference', answer: preferences.body_type_preference.join(', '), isDealbreaker: false },
+      { question: 'hair_color_preference', answer: preferences.hair_color_preference.join(', '), isDealbreaker: false },
       { question: 'ethnicity_preference', answer: preferences.ethnicity_preference.join(', '), isDealbreaker: false },
       { question: 'fitness_preference', answer: preferences.fitness_preference.join(', '), isDealbreaker: false },
     ].filter(d => d.answer);
@@ -284,6 +293,28 @@ export default function PhysicalPage() {
 
           <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
           {renderMultiSelectChips(BODY_PREF_OPTIONS, preferences.body_type_preference, (v) => togglePrefMulti('body_type_preference', v))}
+        </div>
+
+        {/* ─── HAIR COLOR ─── */}
+        <div style={{ marginTop: 30 }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: 14,
+              fontWeight: 500,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-true)',
+              marginBottom: 0,
+            }}
+          >
+            HAIR COLOR
+          </h2>
+          <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
+          <div style={subLabelStyle}>YOU ARE</div>
+          {renderSingleSelectRows(HAIR_OPTIONS, aboutYou.hair_color, (v) => selectAboutSingle('hair_color', v))}
+          <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
+          {renderMultiSelectChips(HAIR_PREF_OPTIONS, preferences.hair_color_preference, (v) => togglePrefMulti('hair_color_preference', v))}
         </div>
 
         {/* ─── ETHNICITY ─── */}
