@@ -139,23 +139,11 @@ export default function QualitiesPage() {
           {ranked.map((item, index) => (
             <div
               key={item}
-              draggable
-              onDragStart={() => handleDragStart(index)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDrop={(e) => handleDrop(e, index)}
-              onDragEnd={handleDragEnd}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '18px 0',
+                padding: '14px 0',
                 borderBottom: '1px solid var(--rule)',
-                cursor: 'grab',
-                opacity: dragIndex === index ? 0.4 : 1,
-                backgroundColor:
-                  dragOverIndex === index && dragIndex !== index
-                    ? 'var(--introduction-wash)'
-                    : 'transparent',
-                transition: 'background-color 0.15s ease',
               }}
             >
               {/* Rank number */}
@@ -184,16 +172,47 @@ export default function QualitiesPage() {
                 {item}
               </span>
 
-              {/* Drag handle */}
-              <span
-                style={{
-                  fontFamily: 'var(--font-system)',
-                  fontSize: 13,
-                  color: 'var(--gray-quiet)',
-                }}
-              >
-                ≡
-              </span>
+              {/* Move buttons */}
+              <div style={{ display: 'flex', gap: 4 }}>
+                <button
+                  onClick={() => {
+                    if (index > 0) {
+                      const next = [...ranked];
+                      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                      setRanked(next);
+                    }
+                  }}
+                  disabled={index === 0}
+                  style={{
+                    background: 'none', border: '1px solid var(--rule)',
+                    fontFamily: 'var(--font-system)', fontSize: 14,
+                    color: index === 0 ? 'var(--rule)' : 'var(--gray-quiet)',
+                    width: 32, height: 32, cursor: index === 0 ? 'default' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => {
+                    if (index < ranked.length - 1) {
+                      const next = [...ranked];
+                      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                      setRanked(next);
+                    }
+                  }}
+                  disabled={index === ranked.length - 1}
+                  style={{
+                    background: 'none', border: '1px solid var(--rule)',
+                    fontFamily: 'var(--font-system)', fontSize: 14,
+                    color: index === ranked.length - 1 ? 'var(--rule)' : 'var(--gray-quiet)',
+                    width: 32, height: 32, cursor: index === ranked.length - 1 ? 'default' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                >
+                  ↓
+                </button>
+              </div>
             </div>
           ))}
         </div>
