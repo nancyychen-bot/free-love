@@ -5,7 +5,6 @@ const receipts = [
   { label: "the matching source code", href: "https://github.com/nancyychen-bot/free-love" },
   { label: "what we store, and why", href: "/how-this-works/data" },
   { label: "published finances", href: "/how-this-works/finances" },
-  { label: "your own match profile", href: "/how-this-works/profile" },
 ];
 
 const steps = [
