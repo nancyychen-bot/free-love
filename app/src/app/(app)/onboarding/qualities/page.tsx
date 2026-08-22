@@ -89,7 +89,7 @@ export default function QualitiesPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 5 OF 9
+            STEP 6 OF 9
           </span>
           <span
             style={{

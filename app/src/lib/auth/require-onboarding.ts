@@ -3,12 +3,12 @@ import { getUser } from "./get-user";
 
 const stepRoutes: Record<number, string> = {
   1: "/onboarding/pledge",
-  2: "/onboarding/pledge",
-  3: "/onboarding/identity",
-  4: "/onboarding/dealbreakers",
-  5: "/onboarding/qualities",
-  6: "/onboarding/values",
-  7: "/onboarding/life-answers",
+  2: "/onboarding/identity",
+  3: "/onboarding/partnership",
+  4: "/onboarding/beliefs",
+  5: "/onboarding/lifestyle",
+  6: "/onboarding/qualities",
+  7: "/onboarding/values",
   8: "/onboarding/life-answers",
   9: "/onboarding/photos",
 };

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
-import { saveAllDealbreakers } from '../actions';
+import { savePartnership } from '../actions';
 
 interface QuestionDef {
   key: string;
@@ -14,73 +14,17 @@ interface QuestionDef {
 const questions: QuestionDef[] = [
   { key: 'marriage', title: 'MARRIAGE', options: ['i want to get married', "i'm happy without marriage", 'not sure yet'] },
   { key: 'monogamy', title: 'MONOGAMY', options: ['monogamous', 'open to open', 'poly'] },
-  { key: 'kids', title: 'KIDS', options: ['i have kids', 'i want kids', "i don't want kids"] },
-  { key: 'religion', title: 'RELIGION', options: ['important to me', 'not important', 'spiritual but not religious'] },
-  { key: 'politics', title: 'POLITICS', options: ['progressive', 'moderate', 'conservative', 'independent', 'apolitical'] },
-  { key: 'drinking', title: 'DRINKING', options: ['i drink', "i don't drink", 'i drink socially'] },
-  { key: 'smoking', title: 'SMOKING', options: ['i smoke', "i don't smoke", 'i smoke sometimes'] },
-  { key: 'drugs', title: 'DRUGS', options: ["i don't use drugs", 'cannabis', 'psychedelics', 'other'] },
-  { key: 'lifestyle', title: 'LIFESTYLE', options: ['homebody', 'social', 'somewhere in between'] },
+  { key: 'kids_have', title: 'DO YOU HAVE KIDS?', options: ['yes', 'no'] },
+  { key: 'kids_want', title: 'DO YOU WANT (MORE) KIDS?', options: ['yes', 'no', 'maybe'] },
 ];
 
-const MULTI_SELECT_KEYS = new Set(['drugs']);
-const EXCLUSIVE_OPTIONS: Record<string, string> = {
-  drugs: "i don't use drugs",
-};
-
-const religionOptions = [
-  'Christian — Catholic',
-  'Christian — Protestant',
-  'Christian — Orthodox',
-  'Christian — other',
-  'Jewish',
-  'Muslim',
-  'Hindu',
-  'Buddhist',
-  'Sikh',
-  'other',
-];
-
-export default function DealbreakersPage() {
+export default function PartnershipPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [multiAnswers, setMultiAnswers] = useState<Record<string, string[]>>({});
   const [hardLines, setHardLines] = useState<Record<string, boolean>>({});
-  const [religionDetail, setReligionDetail] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  function isOptionSelected(questionKey: string, option: string): boolean {
-    if (MULTI_SELECT_KEYS.has(questionKey)) {
-      return (multiAnswers[questionKey] ?? []).includes(option);
-    }
-    return answers[questionKey] === option;
-  }
-
   function selectAnswer(questionKey: string, option: string) {
-    if (MULTI_SELECT_KEYS.has(questionKey)) {
-      // Multi-select behavior
-      setMultiAnswers(prev => {
-        const current = prev[questionKey] ?? [];
-        const exclusive = EXCLUSIVE_OPTIONS[questionKey];
-        let next: string[];
-        if (current.includes(option)) {
-          // Deselect
-          next = current.filter(o => o !== option);
-        } else if (option === exclusive) {
-          // Selecting the exclusive option (e.g., "i don't use drugs") clears others
-          next = [option];
-        } else {
-          // Selecting a non-exclusive option — remove exclusive if it was selected
-          next = [...current.filter(o => o !== exclusive), option];
-        }
-        return { ...prev, [questionKey]: next };
-      });
-      return;
-    }
-
     setAnswers(prev => ({ ...prev, [questionKey]: option }));
-    if (questionKey === 'religion' && option !== 'important to me') {
-      setReligionDetail('');
-    }
   }
 
   function toggleHardLine(questionKey: string) {
@@ -89,25 +33,12 @@ export default function DealbreakersPage() {
 
   async function handleSubmit() {
     setSubmitting(true);
-    const singleData = Object.entries(answers).map(([question, answer]) => {
-      const finalAnswer =
-        question === 'religion' && answer === 'important to me' && religionDetail
-          ? `important to me — ${religionDetail}`
-          : answer;
-      return {
-        question,
-        answer: finalAnswer,
-        isDealbreaker: !!hardLines[question],
-      };
-    });
-    const multiData = Object.entries(multiAnswers)
-      .filter(([, options]) => options.length > 0)
-      .map(([question, options]) => ({
-        question,
-        answer: options.join(', '),
-        isDealbreaker: !!hardLines[question],
-      }));
-    await saveAllDealbreakers([...singleData, ...multiData]);
+    const data = Object.entries(answers).map(([question, answer]) => ({
+      question,
+      answer,
+      isDealbreaker: !!hardLines[question],
+    }));
+    await savePartnership(data);
   }
 
   return (
@@ -133,7 +64,7 @@ export default function DealbreakersPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 4 OF 9
+            STEP 3 OF 9
           </span>
           <span
             style={{
@@ -161,7 +92,7 @@ export default function DealbreakersPage() {
             marginTop: 30,
           }}
         >
-          THE DEALBREAKER QUESTIONS
+          PARTNERSHIP
         </h1>
 
         {/* Explanation */}
@@ -174,8 +105,8 @@ export default function DealbreakersPage() {
             marginTop: 12,
           }}
         >
-          Answer each honestly. Flag the ones that are a hard line — we will
-          never match you across a flagged answer.
+          Answer honestly. Flag the ones that matter most — you&rsquo;ll only
+          match with people who share those answers.
         </p>
 
         {/* Questions */}
@@ -200,24 +131,9 @@ export default function DealbreakersPage() {
               {/* Hairline */}
               <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
 
-              {/* Multi-select hint */}
-              {MULTI_SELECT_KEYS.has(q.key) && (
-                <p
-                  style={{
-                    fontFamily: 'var(--font-system)',
-                    fontSize: 11,
-                    color: 'var(--gray-quiet)',
-                    marginTop: 8,
-                    marginBottom: 4,
-                  }}
-                >
-                  select any that apply
-                </p>
-              )}
-
               {/* Options */}
               {q.options.map((option, index) => {
-                const isSelected = isOptionSelected(q.key, option);
+                const isSelected = answers[q.key] === option;
                 const isLast = index === q.options.length - 1;
 
                 return (
@@ -255,48 +171,7 @@ export default function DealbreakersPage() {
                 );
               })}
 
-              {/* Religion follow-up dropdown */}
-              {q.key === 'religion' && answers.religion === 'important to me' && (
-                <div style={{ marginTop: 16 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontFamily: 'var(--font-system)',
-                      fontSize: 10,
-                      fontWeight: 500,
-                      letterSpacing: '0.16em',
-                      textTransform: 'uppercase',
-                      color: 'var(--gray-quiet)',
-                      marginBottom: 6,
-                    }}
-                  >
-                    which one?
-                  </label>
-                  <select
-                    value={religionDetail}
-                    onChange={e => setReligionDetail(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: 13,
-                      border: '1px solid var(--rule)',
-                      background: 'var(--paper)',
-                      fontFamily: 'var(--font-system)',
-                      fontSize: 13,
-                      color: 'var(--ink-true)',
-                      outline: 'none',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                    }}
-                  >
-                    <option value="" disabled>select</option>
-                    {religionOptions.map(r => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Hard line checkbox */}
+              {/* Must-match checkbox */}
               <div
                 onClick={() => toggleHardLine(q.key)}
                 style={{
@@ -323,7 +198,7 @@ export default function DealbreakersPage() {
                     color: 'var(--ink-true)',
                   }}
                 >
-                  this is a hard line
+                  must match
                 </span>
               </div>
             </div>

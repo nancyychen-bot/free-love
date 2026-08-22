@@ -3,7 +3,7 @@
 import { db } from '@/lib/db';
 import { users, profiles, lifeBasics, rankedQualities, rankedValues, lifeAnswers } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 
 export async function signPledge() {
@@ -11,7 +11,7 @@ export async function signPledge() {
   if (!user) redirect('/login');
 
   await db.update(users)
-    .set({ pledgeSignedAt: new Date(), onboardingStep: 3 })
+    .set({ pledgeSignedAt: new Date(), onboardingStep: 2 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/identity');
@@ -51,10 +51,10 @@ export async function saveIdentity(formData: FormData) {
   }
 
   await db.update(users)
-    .set({ onboardingStep: 4 })
+    .set({ onboardingStep: 3 })
     .where(eq(users.id, user.id));
 
-  redirect('/onboarding/dealbreakers');
+  redirect('/onboarding/partnership');
 }
 
 export async function saveDealbreaker(formData: FormData) {
@@ -80,7 +80,13 @@ export async function saveDealbreaker(formData: FormData) {
   });
 }
 
-export async function saveAllDealbreakers(data: { question: string; answer: string; isDealbreaker: boolean }[]) {
+const PARTNERSHIP_KEYS = ['marriage', 'monogamy', 'kids_have', 'kids_want'];
+const BELIEFS_KEYS = ['religion', 'politics'];
+const LIFESTYLE_KEYS = ['drinking', 'smoking', 'drugs', 'lifestyle'];
+
+export async function savePartnership(
+  data: { question: string; answer: string; isDealbreaker: boolean }[]
+) {
   const user = await getUser();
   if (!user) redirect('/login');
 
@@ -91,10 +97,51 @@ export async function saveAllDealbreakers(data: { question: string; answer: stri
 
   if (!profile) redirect('/onboarding/identity');
 
-  // Delete existing life basics for this profile
-  await db.delete(lifeBasics).where(eq(lifeBasics.profileId, profile.id));
+  await db.delete(lifeBasics).where(
+    and(
+      eq(lifeBasics.profileId, profile.id),
+      inArray(lifeBasics.question, PARTNERSHIP_KEYS)
+    )
+  );
 
-  // Insert all new ones
+  if (data.length > 0) {
+    await db.insert(lifeBasics).values(
+      data.map(d => ({
+        profileId: profile.id,
+        question: d.question,
+        answer: d.answer,
+        isDealbreaker: d.isDealbreaker,
+      }))
+    );
+  }
+
+  await db.update(users)
+    .set({ onboardingStep: 4 })
+    .where(eq(users.id, user.id));
+
+  redirect('/onboarding/beliefs');
+}
+
+export async function saveBeliefs(
+  data: { question: string; answer: string; isDealbreaker: boolean }[]
+) {
+  const user = await getUser();
+  if (!user) redirect('/login');
+
+  const [profile] = await db.select({ id: profiles.id })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1);
+
+  if (!profile) redirect('/onboarding/identity');
+
+  await db.delete(lifeBasics).where(
+    and(
+      eq(lifeBasics.profileId, profile.id),
+      inArray(lifeBasics.question, BELIEFS_KEYS)
+    )
+  );
+
   if (data.length > 0) {
     await db.insert(lifeBasics).values(
       data.map(d => ({
@@ -108,6 +155,44 @@ export async function saveAllDealbreakers(data: { question: string; answer: stri
 
   await db.update(users)
     .set({ onboardingStep: 5 })
+    .where(eq(users.id, user.id));
+
+  redirect('/onboarding/lifestyle');
+}
+
+export async function saveLifestyle(
+  data: { question: string; answer: string; isDealbreaker: boolean }[]
+) {
+  const user = await getUser();
+  if (!user) redirect('/login');
+
+  const [profile] = await db.select({ id: profiles.id })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1);
+
+  if (!profile) redirect('/onboarding/identity');
+
+  await db.delete(lifeBasics).where(
+    and(
+      eq(lifeBasics.profileId, profile.id),
+      inArray(lifeBasics.question, LIFESTYLE_KEYS)
+    )
+  );
+
+  if (data.length > 0) {
+    await db.insert(lifeBasics).values(
+      data.map(d => ({
+        profileId: profile.id,
+        question: d.question,
+        answer: d.answer,
+        isDealbreaker: d.isDealbreaker,
+      }))
+    );
+  }
+
+  await db.update(users)
+    .set({ onboardingStep: 6 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/qualities');
@@ -135,7 +220,7 @@ export async function saveQualities(ranked: string[]) {
   );
 
   await db.update(users)
-    .set({ onboardingStep: 6 })
+    .set({ onboardingStep: 7 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/values');
