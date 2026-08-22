@@ -15,6 +15,8 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
   onboardingComplete: boolean("onboarding_complete").default(false).notNull(),
+  onboardingStep: integer("onboarding_step").default(1).notNull(),
+  pledgeSignedAt: timestamp("pledge_signed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

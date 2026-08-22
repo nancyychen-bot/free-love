@@ -41,7 +41,12 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  return NextResponse.next();
+  // Forward pathname so server layouts can read it
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-next-pathname", pathname);
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 }
 
 export const config = {

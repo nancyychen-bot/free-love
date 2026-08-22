@@ -1,15 +1,30 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import StatusBar from "@/app/components/StatusBar";
-import FooterLink from "@/app/components/FooterLink";
-import { mockRanking } from "@/lib/mock-data";
+import { useState, useCallback, useTransition } from 'react';
+import StatusBar from '@/app/components/StatusBar';
+import FooterLink from '@/app/components/FooterLink';
+import { saveValues } from '../actions';
 
-export default function RankingPage() {
-  const [ranked, setRanked] = useState<string[]>(mockRanking.ranked);
-  const [unranked, setUnranked] = useState<string[]>(mockRanking.unranked);
+const DEFAULT_RANKED = [
+  'open-mindedness',
+  'loyalty',
+  'independence',
+  'intellectual curiosity',
+  'authenticity',
+];
+const DEFAULT_UNRANKED = [
+  'discipline',
+  'spirituality',
+  'family orientation',
+  'generosity',
+];
+
+export default function ValuesPage() {
+  const [ranked, setRanked] = useState<string[]>(DEFAULT_RANKED);
+  const [unranked, setUnranked] = useState<string[]>(DEFAULT_UNRANKED);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const handleDragStart = useCallback((index: number) => {
     setDragIndex(index);
@@ -50,51 +65,51 @@ export default function RankingPage() {
   const handleChipClick = useCallback(
     (chipLabel: string) => {
       const lastRanked = ranked[ranked.length - 1];
-      setRanked((prev) => [
-        ...prev.slice(0, -1),
-        chipLabel,
-      ]);
-      setUnranked((prev) => [
-        ...prev.filter((u) => u !== chipLabel),
-        lastRanked,
-      ]);
+      setRanked((prev) => [...prev.slice(0, -1), chipLabel]);
+      setUnranked((prev) => [...prev.filter((u) => u !== chipLabel), lastRanked]);
     },
     [ranked]
   );
 
+  const handleSave = () => {
+    startTransition(async () => {
+      await saveValues(ranked);
+    });
+  };
+
   return (
-    <div className="screen" style={{ padding: "0 0 60px 0" }}>
+    <div className="screen" style={{ padding: '0 0 60px 0' }}>
       <StatusBar />
 
-      <div style={{ padding: "40px 24px 0" }}>
+      <div style={{ padding: '40px 24px 0' }}>
         {/* Step row */}
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
           <span
             style={{
-              fontFamily: "var(--font-system)",
+              fontFamily: 'var(--font-system)',
               fontSize: 10,
               fontWeight: 500,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase" as const,
-              color: "var(--gray-quiet)",
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--gray-quiet)',
             }}
           >
-            STEP {mockRanking.step} OF {mockRanking.totalSteps}
+            STEP 6 OF 9
           </span>
           <span
             style={{
-              fontFamily: "var(--font-system)",
+              fontFamily: 'var(--font-system)',
               fontSize: 10,
               fontWeight: 500,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase" as const,
-              color: "var(--gray-quiet)",
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--gray-quiet)',
             }}
           >
             PRIVATE MATCHING INPUT
@@ -104,12 +119,12 @@ export default function RankingPage() {
         {/* Title */}
         <h1
           style={{
-            fontFamily: "var(--font-system)",
+            fontFamily: 'var(--font-system)',
             fontSize: 14,
             fontWeight: 500,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase" as const,
-            color: "var(--ink-true)",
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-true)',
             marginTop: 28,
           }}
         >
@@ -119,15 +134,15 @@ export default function RankingPage() {
         {/* Explanation */}
         <p
           style={{
-            fontFamily: "var(--font-system)",
+            fontFamily: 'var(--font-system)',
             fontSize: 12.5,
             lineHeight: 1.7,
-            color: "var(--gray-quiet)",
+            color: 'var(--gray-quiet)',
             marginTop: 12,
           }}
         >
-          Four qualities, ranked one through four. They cannot be tied. The order
-          is what we match on.
+          Five values, ranked one through five. They cannot be tied. The order is
+          what we match on.
         </p>
 
         {/* Ranked list */}
@@ -141,25 +156,25 @@ export default function RankingPage() {
               onDrop={(e) => handleDrop(e, index)}
               onDragEnd={handleDragEnd}
               style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "18px 0",
-                borderBottom: "1px solid var(--rule)",
-                cursor: "grab",
+                display: 'flex',
+                alignItems: 'center',
+                padding: '18px 0',
+                borderBottom: '1px solid var(--rule)',
+                cursor: 'grab',
                 opacity: dragIndex === index ? 0.4 : 1,
                 backgroundColor:
                   dragOverIndex === index && dragIndex !== index
-                    ? "var(--introduction-wash)"
-                    : "transparent",
-                transition: "background-color 0.15s ease",
+                    ? 'var(--introduction-wash)'
+                    : 'transparent',
+                transition: 'background-color 0.15s ease',
               }}
             >
               {/* Rank number */}
               <span
                 style={{
-                  fontFamily: "var(--font-system)",
+                  fontFamily: 'var(--font-system)',
                   fontSize: 12,
-                  color: "var(--gray-quiet)",
+                  color: 'var(--gray-quiet)',
                   width: 14,
                   minWidth: 14,
                 }}
@@ -170,9 +185,9 @@ export default function RankingPage() {
               {/* Label */}
               <span
                 style={{
-                  fontFamily: "var(--font-system)",
+                  fontFamily: 'var(--font-system)',
                   fontSize: 16,
-                  color: "var(--ink-true)",
+                  color: 'var(--ink-true)',
                   flex: 1,
                   marginLeft: 12,
                 }}
@@ -183,9 +198,9 @@ export default function RankingPage() {
               {/* Drag handle */}
               <span
                 style={{
-                  fontFamily: "var(--font-system)",
+                  fontFamily: 'var(--font-system)',
                   fontSize: 13,
-                  color: "var(--gray-quiet)",
+                  color: 'var(--gray-quiet)',
                 }}
               >
                 ≡
@@ -198,12 +213,12 @@ export default function RankingPage() {
         <div style={{ marginTop: 28 }}>
           <div
             style={{
-              fontFamily: "var(--font-system)",
+              fontFamily: 'var(--font-system)',
               fontSize: 10,
               fontWeight: 500,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase" as const,
-              color: "var(--gray-quiet)",
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--gray-quiet)',
               marginBottom: 12,
             }}
           >
@@ -212,8 +227,8 @@ export default function RankingPage() {
 
           <div
             style={{
-              display: "flex",
-              flexWrap: "wrap" as const,
+              display: 'flex',
+              flexWrap: 'wrap',
               gap: 8,
             }}
           >
@@ -222,13 +237,13 @@ export default function RankingPage() {
                 key={chip}
                 onClick={() => handleChipClick(chip)}
                 style={{
-                  fontFamily: "var(--font-system)",
+                  fontFamily: 'var(--font-system)',
                   fontSize: 13.5,
-                  color: "var(--gray-quiet)",
-                  border: "1px solid var(--rule)",
-                  background: "transparent",
-                  padding: "9px 12px",
-                  cursor: "pointer",
+                  color: 'var(--gray-quiet)',
+                  border: '1px solid var(--rule)',
+                  background: 'transparent',
+                  padding: '9px 12px',
+                  cursor: 'pointer',
                   lineHeight: 1,
                 }}
               >
@@ -241,10 +256,10 @@ export default function RankingPage() {
         {/* Note */}
         <p
           style={{
-            fontFamily: "var(--font-system)",
+            fontFamily: 'var(--font-system)',
             fontSize: 11.5,
             lineHeight: 1.65,
-            color: "var(--gray-quiet)",
+            color: 'var(--gray-quiet)',
             marginTop: 20,
           }}
         >
@@ -254,28 +269,33 @@ export default function RankingPage() {
 
         {/* Footer button */}
         <button
+          onClick={handleSave}
+          disabled={isPending}
           style={{
-            width: "100%",
-            border: "1px solid var(--ink-true)",
-            background: "transparent",
-            fontFamily: "var(--font-system)",
+            width: '100%',
+            border: '1px solid var(--ink-true)',
+            background: 'transparent',
+            fontFamily: 'var(--font-system)',
             fontSize: 14,
-            color: "var(--ink-true)",
-            padding: "14px 0",
-            cursor: "pointer",
+            color: 'var(--ink-true)',
+            padding: '14px 0',
+            cursor: isPending ? 'wait' : 'pointer',
             marginTop: 28,
-            transition: "background-color 0.15s ease, color 0.15s ease",
+            opacity: isPending ? 0.5 : 1,
+            transition: 'background-color 0.15s ease, color 0.15s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--ink-true)";
-            e.currentTarget.style.color = "var(--paper)";
+            if (!isPending) {
+              e.currentTarget.style.backgroundColor = 'var(--ink-true)';
+              e.currentTarget.style.color = 'var(--paper)';
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.color = "var(--ink-true)";
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = 'var(--ink-true)';
           }}
         >
-          save this order
+          {isPending ? 'saving...' : 'save this order'}
         </button>
       </div>
 
