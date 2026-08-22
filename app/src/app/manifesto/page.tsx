@@ -71,6 +71,11 @@ export default function ManifestoPage() {
       <StatusBar />
 
       <div style={{ padding: "28px 26px 0" }}>
+        {/* Close button top-right */}
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+          <BackButton />
+        </div>
+
         {/* Eyebrow row */}
         <div
           style={{

@@ -17,6 +17,7 @@ const OPTIONAL_PROMPTS = [
   'what I\'m still figuring out',
   'what I care about most right now',
   'what people get wrong about me',
+  'what I\'m listening to right now',
 ];
 
 const MIN_OPTIONAL = 2;
