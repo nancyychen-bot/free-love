@@ -8,23 +8,18 @@ import { savePhotos } from '../actions';
 const REQUIRED_THEME = 'just me';
 
 const OPTIONAL_THEMES = [
-  // Your world
   'me in my element',
   'my living space',
   'my bookshelf',
   'my neighborhood',
-  // What you do
   'something I love doing',
   'what I\'m working on',
   'how I move',
   'something I made or cooked',
   'where I spend my weekends',
-  // What matters to you
   'my people',
   'my pet(s)',
-  'a place that means something to me',
-  'what I\'m reading right now',
-  'the last photo that made me smile',
+  'my favorite place',
 ];
 
 const MIN_OPTIONAL = 4;
