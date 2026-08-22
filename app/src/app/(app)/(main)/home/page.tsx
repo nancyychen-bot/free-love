@@ -1,9 +1,8 @@
 import { db } from '@/lib/db';
-import { users, profiles, introductions, conversations, messages, lifeAnswers, lifeSignals } from '@/lib/db/schema';
+import { profiles, introductions, conversations, messages, lifeAnswers, lifeSignals } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
 import { eq, or, and, desc } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
-import StatusBar from '@/app/components/StatusBar';
 import HomeClient from './home-client';
 
 export default async function HomePage() {
@@ -114,7 +113,6 @@ export default async function HomePage() {
       userName={myProfile?.displayName || 'there'}
       introductions={introData.filter(Boolean)}
       conversations={convoData}
-      openConvoCount={convos.length}
     />
   );
 }

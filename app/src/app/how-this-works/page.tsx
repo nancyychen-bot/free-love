@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StatusBar from "@/app/components/StatusBar";
+import BackButton from "@/app/components/BackButton";
 
 const receipts = [
   { label: "the matching source code", href: "https://github.com/nancyychen-bot/free-love" },
@@ -66,18 +67,7 @@ export default function HowThisWorksPage() {
         >
           HOW THIS WORKS
         </span>
-        <Link
-          href="/home"
-          style={{
-            fontFamily: "var(--font-system)",
-            fontSize: 13,
-            color: "var(--gray-quiet)",
-            cursor: "pointer",
-            lineHeight: 1,
-          }}
-        >
-          &times;
-        </Link>
+        <BackButton />
       </div>
 
       <div style={{ padding: "26px 24px 22px" }}>

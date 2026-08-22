@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StatusBar from "@/app/components/StatusBar";
+import BackButton from "@/app/components/BackButton";
 
 const commitments = [
   {
@@ -294,16 +295,7 @@ export default function ManifestoPage() {
           >
             how this works
           </Link>
-          <Link
-            href="/home"
-            style={{
-              fontFamily: "var(--font-system)",
-              fontSize: 11,
-              color: "var(--gray-quiet)",
-            }}
-          >
-            back
-          </Link>
+          <BackButton />
         </div>
       </div>
     </div>
