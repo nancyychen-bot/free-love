@@ -8,7 +8,6 @@ const stateRows = [
   { label: 'your bar', value: mockDrought.bar },
   { label: 'dealbreakers', value: String(mockDrought.dealbreakers) },
   { label: 'radius', value: mockDrought.radius },
-  { label: 'people inside those filters', value: String(mockDrought.poolSize) },
 ];
 
 const levers = [
