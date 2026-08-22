@@ -6,7 +6,7 @@ import FooterLink from '@/app/components/FooterLink';
 import { savePhysical } from '../actions';
 
 const HEIGHT_OPTIONS = ['short', 'average', 'tall'];
-const HEIGHT_PREF_OPTIONS = ['taller', 'shorter', 'similar', 'no preference'];
+const HEIGHT_PREF_OPTIONS = ['short', 'average', 'tall', 'no preference'];
 
 const BODY_OPTIONS = ['slim', 'athletic', 'average', 'curvy', 'plus-size'];
 const BODY_PREF_OPTIONS = ['slim', 'athletic', 'average', 'curvy', 'plus-size', 'no preference'];
@@ -36,13 +36,13 @@ export default function PhysicalPage() {
   });
 
   const [preferences, setPreferences] = useState<{
-    height_preference: string;
+    height_preference: string[];
     body_type_preference: string[];
     hair_color_preference: string[];
     ethnicity_preference: string[];
     fitness_preference: string[];
   }>({
-    height_preference: '',
+    height_preference: [],
     body_type_preference: [],
     hair_color_preference: [],
     ethnicity_preference: [],
@@ -65,11 +65,7 @@ export default function PhysicalPage() {
     });
   }
 
-  function selectPrefSingle(key: 'height_preference', value: string) {
-    setPreferences(prev => ({ ...prev, [key]: value }));
-  }
-
-  function togglePrefMulti(key: 'body_type_preference' | 'hair_color_preference' | 'ethnicity_preference' | 'fitness_preference', value: string) {
+  function togglePrefMulti(key: 'height_preference' | 'body_type_preference' | 'hair_color_preference' | 'ethnicity_preference' | 'fitness_preference', value: string) {
     setPreferences(prev => {
       const current = prev[key];
       if (value === 'no preference') {
@@ -90,7 +86,7 @@ export default function PhysicalPage() {
       { question: 'hair_color', answer: aboutYou.hair_color, isDealbreaker: false },
       { question: 'ethnicity', answer: aboutYou.ethnicity.join(', '), isDealbreaker: false },
       { question: 'fitness', answer: aboutYou.fitness, isDealbreaker: false },
-      { question: 'height_preference', answer: preferences.height_preference, isDealbreaker: false },
+      { question: 'height_preference', answer: preferences.height_preference.join(', '), isDealbreaker: false },
       { question: 'body_type_preference', answer: preferences.body_type_preference.join(', '), isDealbreaker: false },
       { question: 'hair_color_preference', answer: preferences.hair_color_preference.join(', '), isDealbreaker: false },
       { question: 'ethnicity_preference', answer: preferences.ethnicity_preference.join(', '), isDealbreaker: false },
@@ -268,7 +264,7 @@ export default function PhysicalPage() {
           {renderSingleSelectRows(HEIGHT_OPTIONS, aboutYou.height, (v) => selectAboutSingle('height', v))}
 
           <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
-          {renderSingleSelectRows(HEIGHT_PREF_OPTIONS, preferences.height_preference, (v) => selectPrefSingle('height_preference', v))}
+          {renderMultiSelectChips(HEIGHT_PREF_OPTIONS, preferences.height_preference, (v) => togglePrefMulti('height_preference', v))}
         </div>
 
         {/* ─── BODY TYPE ─── */}

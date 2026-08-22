@@ -36,32 +36,7 @@ export default function IntroPage() {
             marginTop: 24,
           }}
         >
-          This takes about ten minutes. Everything you share is used to find
-          you someone genuinely compatible — not to fill a deck.
-        </p>
-        <p
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            lineHeight: 1.75,
-            color: 'var(--gray-quiet)',
-            marginTop: 14,
-          }}
-        >
-          The more honest you are, the better your matches will be. The more
-          dealbreakers you add, the smaller your pool becomes. That&rsquo;s by
-          design.
-        </p>
-        <p
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            lineHeight: 1.75,
-            color: 'var(--gray-quiet)',
-            marginTop: 14,
-          }}
-        >
-          Nothing here is public unless we tell you it is.
+          Takes about ten minutes. The more honest you are, the better your matches. Nothing is public unless we say so.
         </p>
 
         {/* Button */}
