@@ -254,7 +254,7 @@ export default function LifestylePage() {
                     letterSpacing: '0.16em', textTransform: 'uppercase',
                     color: 'var(--gray-quiet)', marginBottom: 10,
                   }}>
-                    SELECT ANY THAT APPLY
+                    PREFERENCES — THESE HELP US MATCH, NOT FILTER
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {KINK_OPTIONS.map(kink => {
@@ -276,6 +276,12 @@ export default function LifestylePage() {
                       );
                     })}
                   </div>
+                  <p style={{
+                    fontFamily: 'var(--font-system)', fontSize: 11,
+                    lineHeight: 1.6, color: 'var(--gray-quiet)', marginTop: 12,
+                  }}>
+                    The dealbreaker is kinky vs. vanilla. Your specific preferences are weighted in matching but never used as a hard filter.
+                  </p>
                 </div>
               )}
 
