@@ -9,12 +9,22 @@ export default async function HomePage() {
   const user = await getUser();
   if (!user) redirect('/login');
 
-  // Get the user's profile
+  // Get the user's profile + photo
   const [myProfile] = await db
-    .select({ displayName: profiles.displayName })
+    .select({ id: profiles.id, displayName: profiles.displayName, locationName: profiles.locationName })
     .from(profiles)
     .where(eq(profiles.userId, user.id))
     .limit(1);
+
+  let myPhoto: string | null = null;
+  if (myProfile) {
+    const [photo] = await db
+      .select({ url: lifeSignals.photoUrl })
+      .from(lifeSignals)
+      .where(eq(lifeSignals.profileId, myProfile.id))
+      .limit(1);
+    myPhoto = photo?.url ?? null;
+  }
 
   // Get pending introductions
   const intros = await db
@@ -111,8 +121,11 @@ export default async function HomePage() {
   return (
     <HomeClient
       userName={myProfile?.displayName || 'there'}
+      userLocation={myProfile?.locationName || null}
+      userPhoto={myPhoto}
       introductions={introData.filter(Boolean)}
       conversations={convoData}
+      convoCount={convos.length}
     />
   );
 }
