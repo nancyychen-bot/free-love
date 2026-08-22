@@ -19,11 +19,11 @@ const levers = [
 
 export default function Drought() {
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen">
       <StatusBar />
 
       {/* Content */}
-      <div style={{ flex: 1, padding: '0 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         {/* Headline — 96px top padding (absurd whitespace is intentional) */}
         <h1
           style={{

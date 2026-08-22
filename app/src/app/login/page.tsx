@@ -41,10 +41,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen">
       <StatusBar />
 
-      <div style={{ flex: 1, padding: '0 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         {/* Wordmark */}
         <div style={{ paddingTop: 48 }}>
           <Wordmark size={21} />
@@ -172,20 +172,20 @@ export default function LoginPage() {
             {loading ? 'logging in...' : 'log in'}
           </button>
         </form>
-      </div>
 
-      {/* Footer */}
-      <div style={{ padding: '0 24px 32px', textAlign: 'center' }}>
-        <Link
-          href="/signup"
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            color: 'var(--gray-quiet)',
-          }}
-        >
-          need an account? sign up
-        </Link>
+        {/* Footer */}
+        <div style={{ marginTop: 60, textAlign: 'center' }}>
+          <Link
+            href="/signup"
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: 12.5,
+              color: 'var(--gray-quiet)',
+            }}
+          >
+            need an account? sign up
+          </Link>
+        </div>
       </div>
     </div>
   );

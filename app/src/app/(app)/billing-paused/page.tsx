@@ -3,11 +3,11 @@ import FooterLink from '@/app/components/FooterLink';
 
 export default function BillingPaused() {
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen">
       <StatusBar />
 
       {/* Content */}
-      <div style={{ flex: 1, padding: '0 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         {/* Headline — 200px top padding (even more whitespace than drought) */}
         <h1
           style={{

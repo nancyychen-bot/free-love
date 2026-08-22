@@ -9,7 +9,7 @@ export default function Introduction() {
   const data = mockIntroduction;
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen">
       <StatusBar />
 
       {/* Header row */}
@@ -46,7 +46,7 @@ export default function Introduction() {
       </div>
 
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div>
         {/* Introduction surface */}
         <div
           style={{

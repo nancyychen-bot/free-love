@@ -43,10 +43,10 @@ export default function IdentityPage() {
   }
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+    <div className="screen">
       <StatusBar />
 
-      <div style={{ flex: 1, padding: '40px 24px 0' }}>
+      <div style={{ padding: '40px 24px 0' }}>
         {/* Step row */}
         <div
           style={{

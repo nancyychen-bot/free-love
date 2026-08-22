@@ -7,125 +7,75 @@ import Wordmark from '@/app/components/Wordmark';
 
 export default function SignIn() {
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen">
       <StatusBar />
 
-      {/* Main content */}
-      <div style={{ flex: 1, padding: '0 24px' }}>
-        {/* Illustration */}
-        <div style={{ paddingTop: 74 }}>
-          <FaceIllustration />
-        </div>
+      <div style={{ padding: '40px 24px 24px' }}>
+        <FaceIllustration />
 
-        {/* Wordmark */}
         <div style={{ marginTop: 38 }}>
           <Wordmark size={21} />
         </div>
 
-        {/* Statement */}
-        <p
-          className="type-sign-in-statement"
-          style={{ marginTop: 30, maxWidth: '28ch' }}
-        >
+        <p style={{ marginTop: 30, fontFamily: 'var(--font-human)', fontSize: 23, lineHeight: 1.5, color: '#2A2A2A', maxWidth: '28ch' }}>
           Like being introduced by a friend who actually knows you.
         </p>
 
-        {/* Commitment line */}
-        <p
-          style={{
-            marginTop: 26,
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            lineHeight: 1.7,
-            color: 'var(--gray-quiet)',
-          }}
-        >
+        <p style={{ marginTop: 26, fontFamily: 'var(--font-system)', fontSize: 12.5, lineHeight: 1.7, color: '#8A8A85' }}>
           Non-profit. Open source. Operated at cost.
         </p>
-      </div>
 
-      {/* Footer pinned to bottom */}
-      <div style={{ padding: '0 24px 22px' }}>
-        {/* Primary button */}
-        <Link
-          href="/signup"
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: 15,
-            background: 'var(--ink-true)',
-            color: 'var(--paper)',
-            fontFamily: 'var(--font-system)',
-            fontSize: 13.5,
-            textAlign: 'center',
-            transition: 'background 200ms ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--introduction)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'var(--ink-true)';
-          }}
-        >
-          start the nine questions
-        </Link>
-
-        {/* Secondary button */}
-        <Link
-          href="/login"
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: 15,
-            marginTop: 8,
-            background: 'transparent',
-            border: '1px solid var(--ink-true)',
-            color: 'var(--ink-true)',
-            fontFamily: 'var(--font-system)',
-            fontSize: 13.5,
-            textAlign: 'center' as const,
-            transition: 'background 200ms ease, color 200ms ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--ink-true)';
-            e.currentTarget.style.color = 'var(--paper)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = 'var(--ink-true)';
-          }}
-        >
-          login / signup
-        </Link>
-
-        {/* Footer row */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: 16,
-          }}
-        >
+        <div style={{ marginTop: 60 }}>
           <Link
-            href="/how-this-works"
+            href="/signup"
             style={{
+              display: 'block',
+              width: '100%',
+              padding: 15,
+              background: '#0A0A0A',
+              color: '#F8F8F6',
               fontFamily: 'var(--font-system)',
-              fontSize: 11,
-              color: 'var(--gray-quiet)',
+              fontSize: 13.5,
+              textAlign: 'center',
+              textDecoration: 'none',
             }}
           >
-            how this works
+            start the nine questions
           </Link>
+
           <Link
-            href="/manifesto"
+            href="/login"
             style={{
+              display: 'block',
+              width: '100%',
+              padding: 15,
+              marginTop: 8,
+              background: 'transparent',
+              border: '1px solid #0A0A0A',
+              color: '#0A0A0A',
               fontFamily: 'var(--font-system)',
-              fontSize: 11,
-              color: 'var(--gray-quiet)',
+              fontSize: 13.5,
+              textAlign: 'center',
+              textDecoration: 'none',
             }}
           >
-            the manifesto
+            login / signup
           </Link>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+            <Link
+              href="/how-this-works"
+              style={{ fontFamily: 'var(--font-system)', fontSize: 11, color: '#8A8A85', textDecoration: 'none' }}
+            >
+              how this works
+            </Link>
+            <Link
+              href="/manifesto"
+              style={{ fontFamily: 'var(--font-system)', fontSize: 11, color: '#8A8A85', textDecoration: 'none' }}
+            >
+              the manifesto
+            </Link>
+          </div>
         </div>
       </div>
     </div>

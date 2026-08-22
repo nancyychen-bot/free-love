@@ -41,10 +41,10 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen">
       <StatusBar />
 
-      <div style={{ flex: 1, padding: '0 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         {/* Wordmark */}
         <div style={{ paddingTop: 48 }}>
           <Wordmark size={21} />
@@ -173,20 +173,20 @@ export default function SignupPage() {
             {loading ? 'creating account...' : 'create account'}
           </button>
         </form>
-      </div>
 
-      {/* Footer */}
-      <div style={{ padding: '0 24px 32px', textAlign: 'center' }}>
-        <Link
-          href="/login"
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            color: 'var(--gray-quiet)',
-          }}
-        >
-          already have an account? log in
-        </Link>
+        {/* Footer */}
+        <div style={{ marginTop: 60, textAlign: 'center' }}>
+          <Link
+            href="/login"
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: 12.5,
+              color: 'var(--gray-quiet)',
+            }}
+          >
+            already have an account? log in
+          </Link>
+        </div>
       </div>
     </div>
   );
