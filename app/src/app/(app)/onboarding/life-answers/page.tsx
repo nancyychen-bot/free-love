@@ -75,7 +75,7 @@ export default function LifeAnswersPage() {
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
             letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
           }}>
-            STEP 9 OF 10
+            STEP 7 OF 9
           </span>
           <span style={{
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,

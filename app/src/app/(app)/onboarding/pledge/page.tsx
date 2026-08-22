@@ -16,40 +16,6 @@ export default function PledgePage() {
       <StatusBar />
 
       <div style={{ padding: '40px 24px 100px' }}>
-        {/* Step row */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-system)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: 'var(--gray-quiet)',
-            }}
-          >
-            STEP 1 OF 10
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-system)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: 'var(--gray-quiet)',
-            }}
-          >
-            INTERNAL
-          </span>
-        </div>
-
         {/* Title */}
         <h1
           style={{

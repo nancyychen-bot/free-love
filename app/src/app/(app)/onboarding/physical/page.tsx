@@ -5,207 +5,169 @@ import StatusBar from '@/app/components/StatusBar';
 import FooterLink from '@/app/components/FooterLink';
 import { savePhysical } from '../actions';
 
-interface SingleSelectDef {
-  key: string;
-  title: string;
-  options: string[];
-  type: 'single';
-}
+const HEIGHT_OPTIONS = ['short', 'average', 'tall'];
+const HEIGHT_PREF_OPTIONS = ['taller', 'shorter', 'similar', 'no preference'];
 
-interface MultiSelectDef {
-  key: string;
-  title: string;
-  options: string[];
-  type: 'multi';
-  exclusiveOption?: string;
-}
+const BODY_OPTIONS = ['slim', 'athletic', 'average', 'curvy', 'plus-size'];
+const BODY_PREF_OPTIONS = ['slim', 'athletic', 'average', 'curvy', 'plus-size', 'no preference'];
 
-type QuestionDef = SingleSelectDef | MultiSelectDef;
+const ETHNICITY_OPTIONS = ['Black', 'White', 'Hispanic / Latino', 'East Asian', 'South Asian', 'Southeast Asian', 'Middle Eastern', 'Mixed', 'other'];
+const ETHNICITY_PREF_OPTIONS = ['Black', 'White', 'Hispanic / Latino', 'East Asian', 'South Asian', 'Southeast Asian', 'Middle Eastern', 'Mixed', 'other', 'no preference'];
 
-const aboutYouQuestions: QuestionDef[] = [
-  { key: 'height', title: 'HEIGHT', options: ['short', 'average', 'tall'], type: 'single' },
-  { key: 'body_type', title: 'BODY TYPE', options: ['slim', 'athletic', 'average', 'curvy', 'plus-size'], type: 'single' },
-  { key: 'ethnicity', title: 'ETHNICITY', options: ['Black', 'White', 'Hispanic / Latino', 'East Asian', 'South Asian', 'Southeast Asian', 'Middle Eastern', 'Mixed', 'other'], type: 'multi' },
-  { key: 'fitness', title: 'FITNESS', options: ['very active', 'active', 'moderate', 'not very active'], type: 'single' },
-];
-
-const preferenceQuestions: QuestionDef[] = [
-  { key: 'height_preference', title: 'HEIGHT PREFERENCE', options: ['taller', 'shorter', 'similar', 'no preference'], type: 'single' },
-  { key: 'body_type_preference', title: 'BODY TYPE PREFERENCE', options: ['slim', 'athletic', 'average', 'curvy', 'plus-size', 'no preference'], type: 'multi', exclusiveOption: 'no preference' },
-  { key: 'ethnicity_preference', title: 'ETHNICITY PREFERENCE', options: ['Black', 'White', 'Hispanic / Latino', 'East Asian', 'South Asian', 'Southeast Asian', 'Middle Eastern', 'Mixed', 'other', 'no preference'], type: 'multi', exclusiveOption: 'no preference' },
-  { key: 'fitness_preference', title: 'FITNESS PREFERENCE', options: ['very active', 'active', 'moderate', 'no preference'], type: 'single' },
-];
+const FITNESS_OPTIONS = ['very active', 'active', 'moderate', 'not very active'];
+const FITNESS_PREF_OPTIONS = ['very active', 'active', 'moderate', 'not very active', 'no preference'];
 
 export default function PhysicalPage() {
-  const [singleAnswers, setSingleAnswers] = useState<Record<string, string>>({});
-  const [multiAnswers, setMultiAnswers] = useState<Record<string, string[]>>({});
+  const [aboutYou, setAboutYou] = useState<{
+    height: string;
+    body_type: string;
+    ethnicity: string[];
+    fitness: string;
+  }>({
+    height: '',
+    body_type: '',
+    ethnicity: [],
+    fitness: '',
+  });
+
+  const [preferences, setPreferences] = useState<{
+    height_preference: string;
+    body_type_preference: string[];
+    ethnicity_preference: string[];
+    fitness_preference: string[];
+  }>({
+    height_preference: '',
+    body_type_preference: [],
+    ethnicity_preference: [],
+    fitness_preference: [],
+  });
+
   const [submitting, setSubmitting] = useState(false);
 
-  function selectSingle(key: string, option: string) {
-    setSingleAnswers(prev => ({ ...prev, [key]: option }));
+  function selectAboutSingle(key: 'height' | 'body_type' | 'fitness', value: string) {
+    setAboutYou(prev => ({ ...prev, [key]: value }));
   }
 
-  function toggleMulti(key: string, option: string, exclusiveOption?: string) {
-    setMultiAnswers(prev => {
-      const current = prev[key] ?? [];
-      if (option === exclusiveOption) {
-        return { ...prev, [key]: current.includes(option) ? [] : [option] };
+  function toggleAboutMulti(key: 'ethnicity', value: string) {
+    setAboutYou(prev => {
+      const current = prev[key];
+      if (current.includes(value)) {
+        return { ...prev, [key]: current.filter(v => v !== value) };
       }
-      if (current.includes(option)) {
-        return { ...prev, [key]: current.filter(o => o !== option) };
+      return { ...prev, [key]: [...current, value] };
+    });
+  }
+
+  function selectPrefSingle(key: 'height_preference', value: string) {
+    setPreferences(prev => ({ ...prev, [key]: value }));
+  }
+
+  function togglePrefMulti(key: 'body_type_preference' | 'ethnicity_preference' | 'fitness_preference', value: string) {
+    setPreferences(prev => {
+      const current = prev[key];
+      if (value === 'no preference') {
+        return { ...prev, [key]: current.includes('no preference') ? [] : ['no preference'] };
       }
-      return { ...prev, [key]: [...current.filter(o => o !== exclusiveOption), option] };
+      if (current.includes(value)) {
+        return { ...prev, [key]: current.filter(v => v !== value) };
+      }
+      return { ...prev, [key]: [...current.filter(v => v !== 'no preference'), value] };
     });
   }
 
   async function handleSubmit() {
     setSubmitting(true);
-    const data: { question: string; answer: string; isDealbreaker: boolean }[] = [];
-
-    const allQuestions = [...aboutYouQuestions, ...preferenceQuestions];
-    for (const q of allQuestions) {
-      if (q.type === 'single') {
-        const answer = singleAnswers[q.key];
-        if (answer) {
-          data.push({ question: q.key, answer, isDealbreaker: false });
-        }
-      } else {
-        const answers = multiAnswers[q.key] ?? [];
-        if (answers.length > 0) {
-          data.push({ question: q.key, answer: answers.join(', '), isDealbreaker: false });
-        }
-      }
-    }
+    const data = [
+      { question: 'height', answer: aboutYou.height, isDealbreaker: false },
+      { question: 'body_type', answer: aboutYou.body_type, isDealbreaker: false },
+      { question: 'ethnicity', answer: aboutYou.ethnicity.join(', '), isDealbreaker: false },
+      { question: 'fitness', answer: aboutYou.fitness, isDealbreaker: false },
+      { question: 'height_preference', answer: preferences.height_preference, isDealbreaker: false },
+      { question: 'body_type_preference', answer: preferences.body_type_preference.join(', '), isDealbreaker: false },
+      { question: 'ethnicity_preference', answer: preferences.ethnicity_preference.join(', '), isDealbreaker: false },
+      { question: 'fitness_preference', answer: preferences.fitness_preference.join(', '), isDealbreaker: false },
+    ].filter(d => d.answer);
 
     await savePhysical(data);
   }
 
-  function renderSingleSelect(q: SingleSelectDef, isFirst: boolean) {
-    return (
-      <div key={q.key} style={{ marginTop: isFirst ? 0 : 30 }}>
-        <h2
+  function renderSingleSelectRows(options: string[], selectedValue: string, onSelect: (value: string) => void) {
+    return options.map((option, index) => {
+      const isSelected = selectedValue === option;
+      const isLast = index === options.length - 1;
+      return (
+        <div
+          key={option}
+          onClick={() => onSelect(option)}
           style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 14,
-            fontWeight: 500,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-true)',
-            marginBottom: 0,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '15px 0',
+            borderBottom: isLast ? '1px solid var(--rule)' : 'none',
+            cursor: 'pointer',
           }}
         >
-          {q.title}
-        </h2>
+          <span
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: 15,
+              color: isSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
+            }}
+          >
+            {option}
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: isSelected ? 11 : 15,
+              color: isSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
+            }}
+          >
+            {isSelected ? 'selected' : '—'}
+          </span>
+        </div>
+      );
+    });
+  }
 
-        <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
-
-        {q.options.map((option, index) => {
-          const isSelected = singleAnswers[q.key] === option;
-          const isLast = index === q.options.length - 1;
-
+  function renderMultiSelectChips(options: string[], selected: string[], onToggle: (value: string) => void) {
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {options.map(option => {
+          const isSelected = selected.includes(option);
           return (
-            <div
+            <button
               key={option}
-              onClick={() => selectSingle(q.key, option)}
+              type="button"
+              onClick={() => onToggle(option)}
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '15px 0',
-                borderBottom: isLast ? '1px solid var(--rule)' : 'none',
+                fontFamily: 'var(--font-system)',
+                fontSize: 13.5,
+                color: isSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
+                border: `1px solid ${isSelected ? 'var(--ink-true)' : 'var(--rule)'}`,
+                background: 'transparent',
+                padding: '9px 12px',
                 cursor: 'pointer',
+                lineHeight: 1,
               }}
             >
-              <span
-                style={{
-                  fontFamily: 'var(--font-system)',
-                  fontSize: 15,
-                  color: isSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
-                }}
-              >
-                {option}
-              </span>
-              <span
-                style={{
-                  fontFamily: 'var(--font-system)',
-                  fontSize: isSelected ? 11 : 15,
-                  color: isSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
-                }}
-              >
-                {isSelected ? 'selected' : '—'}
-              </span>
-            </div>
+              {option}
+            </button>
           );
         })}
       </div>
     );
   }
 
-  function renderMultiSelect(q: MultiSelectDef, isFirst: boolean) {
-    const selected = multiAnswers[q.key] ?? [];
-
-    return (
-      <div key={q.key} style={{ marginTop: isFirst ? 0 : 30 }}>
-        <h2
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 14,
-            fontWeight: 500,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-true)',
-            marginBottom: 0,
-          }}
-        >
-          {q.title}
-        </h2>
-
-        <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
-
-        <p
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 11,
-            color: 'var(--gray-quiet)',
-            marginTop: 8,
-            marginBottom: 4,
-          }}
-        >
-          select any that apply
-        </p>
-
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-          {q.options.map(option => {
-            const isSelected = selected.includes(option);
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => toggleMulti(q.key, option, q.exclusiveOption)}
-                style={{
-                  fontFamily: 'var(--font-system)',
-                  fontSize: 13.5,
-                  color: isSelected ? 'var(--ink-true)' : 'var(--gray-quiet)',
-                  border: `1px solid ${isSelected ? 'var(--ink-true)' : 'var(--rule)'}`,
-                  background: 'transparent',
-                  padding: '9px 12px',
-                  cursor: 'pointer',
-                  lineHeight: 1,
-                }}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  function renderQuestion(q: QuestionDef, isFirst: boolean) {
-    if (q.type === 'single') return renderSingleSelect(q, isFirst);
-    return renderMultiSelect(q, isFirst);
-  }
+  const subLabelStyle = {
+    fontFamily: 'var(--font-system)',
+    fontSize: 10,
+    fontWeight: 500 as const,
+    letterSpacing: '0.16em',
+    textTransform: 'uppercase' as const,
+    color: 'var(--gray-quiet)',
+  };
 
   return (
     <div className="screen">
@@ -230,7 +192,7 @@ export default function PhysicalPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 3 OF 10
+            STEP 8 OF 9
           </span>
           <span
             style={{
@@ -264,53 +226,116 @@ export default function PhysicalPage() {
         {/* Explanation */}
         <p
           style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 12.5,
-            lineHeight: 1.7,
-            color: 'var(--gray-quiet)',
-            marginTop: 12,
+            fontFamily: 'var(--font-human)',
+            fontSize: 17,
+            lineHeight: 1.5,
+            color: 'var(--ink-human)',
+            marginTop: 14,
           }}
         >
-          Be honest. Your answers and preferences are used for matching, never
-          shown on your profile.
+          Be honest about yourself and open about what you&rsquo;re attracted to.
+          Narrowing your preferences means fewer matches — the more open you are,
+          the more introductions you&rsquo;ll receive.
         </p>
 
-        {/* Section: About You */}
+        {/* ─── HEIGHT ─── */}
         <div style={{ marginTop: 30 }}>
-          <div
+          <h2
             style={{
               fontFamily: 'var(--font-system)',
-              fontSize: 10,
+              fontSize: 14,
               fontWeight: 500,
-              letterSpacing: '0.16em',
+              letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: 'var(--gray-quiet)',
-              marginBottom: 20,
+              color: 'var(--ink-true)',
+              marginBottom: 0,
             }}
           >
-            ABOUT YOU
-          </div>
+            HEIGHT
+          </h2>
+          <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
 
-          {aboutYouQuestions.map((q, i) => renderQuestion(q, i === 0))}
+          <div style={{ ...subLabelStyle, marginTop: 14 }}>YOU ARE</div>
+          {renderSingleSelectRows(HEIGHT_OPTIONS, aboutYou.height, (v) => selectAboutSingle('height', v))}
+
+          <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
+          {renderSingleSelectRows(HEIGHT_PREF_OPTIONS, preferences.height_preference, (v) => selectPrefSingle('height_preference', v))}
         </div>
 
-        {/* Section: Your Preferences */}
-        <div style={{ marginTop: 40 }}>
-          <div
+        {/* ─── BODY TYPE ─── */}
+        <div style={{ marginTop: 30 }}>
+          <h2
             style={{
               fontFamily: 'var(--font-system)',
-              fontSize: 10,
+              fontSize: 14,
               fontWeight: 500,
-              letterSpacing: '0.16em',
+              letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: 'var(--gray-quiet)',
-              marginBottom: 20,
+              color: 'var(--ink-true)',
+              marginBottom: 0,
             }}
           >
-            YOUR PREFERENCES
+            BODY TYPE
+          </h2>
+          <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
+
+          <div style={{ ...subLabelStyle, marginTop: 14 }}>YOU ARE</div>
+          {renderSingleSelectRows(BODY_OPTIONS, aboutYou.body_type, (v) => selectAboutSingle('body_type', v))}
+
+          <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
+          {renderMultiSelectChips(BODY_PREF_OPTIONS, preferences.body_type_preference, (v) => togglePrefMulti('body_type_preference', v))}
+        </div>
+
+        {/* ─── ETHNICITY ─── */}
+        <div style={{ marginTop: 30 }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: 14,
+              fontWeight: 500,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-true)',
+              marginBottom: 0,
+            }}
+          >
+            ETHNICITY
+          </h2>
+          <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
+
+          <div style={{ ...subLabelStyle, marginTop: 14 }}>YOU ARE</div>
+          <div style={{ marginTop: 8 }}>
+            {renderMultiSelectChips(ETHNICITY_OPTIONS, aboutYou.ethnicity, (v) => toggleAboutMulti('ethnicity', v))}
           </div>
 
-          {preferenceQuestions.map((q, i) => renderQuestion(q, i === 0))}
+          <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
+          <div style={{ marginTop: 8 }}>
+            {renderMultiSelectChips(ETHNICITY_PREF_OPTIONS, preferences.ethnicity_preference, (v) => togglePrefMulti('ethnicity_preference', v))}
+          </div>
+        </div>
+
+        {/* ─── FITNESS ─── */}
+        <div style={{ marginTop: 30 }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-system)',
+              fontSize: 14,
+              fontWeight: 500,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-true)',
+              marginBottom: 0,
+            }}
+          >
+            FITNESS
+          </h2>
+          <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginTop: 12 }} />
+
+          <div style={{ ...subLabelStyle, marginTop: 14 }}>YOU ARE</div>
+          {renderSingleSelectRows(FITNESS_OPTIONS, aboutYou.fitness, (v) => selectAboutSingle('fitness', v))}
+
+          <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
+          {renderMultiSelectChips(FITNESS_PREF_OPTIONS, preferences.fitness_preference, (v) => togglePrefMulti('fitness_preference', v))}
         </div>
 
         {/* Footer button */}

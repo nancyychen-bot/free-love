@@ -120,7 +120,7 @@ export default function IdentityPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 2 OF 10
+            STEP 1 OF 9
           </span>
           <span
             style={{

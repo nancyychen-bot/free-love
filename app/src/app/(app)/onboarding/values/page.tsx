@@ -101,7 +101,7 @@ export default function ValuesPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 8 OF 10
+            STEP 6 OF 9
           </span>
           <span
             style={{

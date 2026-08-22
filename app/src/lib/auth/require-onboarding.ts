@@ -2,16 +2,15 @@ import { redirect } from "next/navigation";
 import { getUser } from "./get-user";
 
 const stepRoutes: Record<number, string> = {
-  1: "/onboarding/pledge",
-  2: "/onboarding/identity",
-  3: "/onboarding/physical",
-  4: "/onboarding/partnership",
-  5: "/onboarding/beliefs",
-  6: "/onboarding/lifestyle",
-  7: "/onboarding/qualities",
-  8: "/onboarding/values",
-  9: "/onboarding/life-answers",
-  10: "/onboarding/photos",
+  1: "/onboarding/identity",
+  2: "/onboarding/partnership",
+  3: "/onboarding/beliefs",
+  4: "/onboarding/lifestyle",
+  5: "/onboarding/qualities",
+  6: "/onboarding/values",
+  7: "/onboarding/life-answers",
+  8: "/onboarding/physical",
+  9: "/onboarding/photos",
 };
 
 /**

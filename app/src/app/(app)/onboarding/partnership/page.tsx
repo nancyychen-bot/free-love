@@ -66,7 +66,7 @@ export default function PartnershipPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 4 OF 10
+            STEP 2 OF 9
           </span>
           <span
             style={{

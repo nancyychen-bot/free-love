@@ -23,7 +23,7 @@ export default function IntroPage() {
             marginTop: 36,
           }}
         >
-          Ten questions. Answer them honestly.
+          A few questions. Answer them honestly.
         </h1>
 
         {/* Body */}
@@ -36,7 +36,7 @@ export default function IntroPage() {
             marginTop: 24,
           }}
         >
-          This takes about ten minutes. Everything you share here is used to find
+          This takes about ten minutes. Everything you share is used to find
           you someone genuinely compatible — not to fill a deck.
         </p>
         <p
@@ -66,7 +66,7 @@ export default function IntroPage() {
 
         {/* Button */}
         <Link
-          href="/onboarding/pledge"
+          href="/onboarding/identity"
           style={{
             display: 'block',
             width: '100%',

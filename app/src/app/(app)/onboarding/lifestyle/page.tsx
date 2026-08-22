@@ -125,7 +125,7 @@ export default function LifestylePage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 6 OF 10
+            STEP 4 OF 9
           </span>
           <span
             style={{

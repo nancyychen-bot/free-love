@@ -12,10 +12,10 @@ export async function signPledge() {
   if (!user) redirect('/login');
 
   await db.update(users)
-    .set({ pledgeSignedAt: new Date(), onboardingStep: 2 })
+    .set({ pledgeSignedAt: new Date(), onboardingStep: 1 })
     .where(eq(users.id, user.id));
 
-  redirect('/onboarding/identity');
+  redirect('/onboarding/intro');
 }
 
 export async function saveIdentity(formData: FormData) {
@@ -52,10 +52,10 @@ export async function saveIdentity(formData: FormData) {
   }
 
   await db.update(users)
-    .set({ onboardingStep: 3 })
+    .set({ onboardingStep: 2 })
     .where(eq(users.id, user.id));
 
-  redirect('/onboarding/physical');
+  redirect('/onboarding/partnership');
 }
 
 export async function saveDealbreaker(formData: FormData) {
@@ -107,8 +107,8 @@ export async function savePhysical(data: { question: string; answer: string; isD
     );
   }
 
-  await db.update(users).set({ onboardingStep: 4 }).where(eq(users.id, user.id));
-  redirect('/onboarding/partnership');
+  await db.update(users).set({ onboardingStep: 9 }).where(eq(users.id, user.id));
+  redirect('/onboarding/photos');
 }
 
 export async function savePartnership(
@@ -143,7 +143,7 @@ export async function savePartnership(
   }
 
   await db.update(users)
-    .set({ onboardingStep: 5 })
+    .set({ onboardingStep: 3 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/beliefs');
@@ -181,7 +181,7 @@ export async function saveBeliefs(
   }
 
   await db.update(users)
-    .set({ onboardingStep: 6 })
+    .set({ onboardingStep: 4 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/lifestyle');
@@ -219,7 +219,7 @@ export async function saveLifestyle(
   }
 
   await db.update(users)
-    .set({ onboardingStep: 7 })
+    .set({ onboardingStep: 5 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/qualities');
@@ -247,7 +247,7 @@ export async function saveQualities(ranked: string[]) {
   );
 
   await db.update(users)
-    .set({ onboardingStep: 8 })
+    .set({ onboardingStep: 6 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/values');
@@ -275,7 +275,7 @@ export async function saveValues(ranked: string[]) {
   );
 
   await db.update(users)
-    .set({ onboardingStep: 9 })
+    .set({ onboardingStep: 7 })
     .where(eq(users.id, user.id));
 
   redirect('/onboarding/life-answers');
@@ -304,10 +304,10 @@ export async function saveLifeAnswers(answers: { prompt: string; answer: string;
   );
 
   await db.update(users)
-    .set({ onboardingStep: 10 })
+    .set({ onboardingStep: 8 })
     .where(eq(users.id, user.id));
 
-  redirect('/onboarding/photos');
+  redirect('/onboarding/physical');
 }
 
 export async function completeOnboarding() {
@@ -315,7 +315,7 @@ export async function completeOnboarding() {
   if (!user) redirect('/login');
 
   await db.update(users)
-    .set({ onboardingComplete: true, onboardingStep: 11 })
+    .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
 
   // Seed test data directly — intro + conversations
@@ -356,7 +356,7 @@ export async function savePhotos(photos: { theme: string; url: string }[]) {
 
   // Mark onboarding complete
   await db.update(users)
-    .set({ onboardingComplete: true, onboardingStep: 11 })
+    .set({ onboardingComplete: true, onboardingStep: 10 })
     .where(eq(users.id, user.id));
 
   // Seed test data

@@ -85,7 +85,7 @@ export default function BeliefsPage() {
               color: 'var(--gray-quiet)',
             }}
           >
-            STEP 5 OF 10
+            STEP 3 OF 9
           </span>
           <span
             style={{
