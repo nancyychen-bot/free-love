@@ -13,20 +13,41 @@ interface QuestionDef {
 
 const questions: QuestionDef[] = [
   { key: 'kids', title: 'KIDS', options: ['i have kids', 'i want kids', "i don't want kids"] },
+  { key: 'marriage', title: 'MARRIAGE', options: ['i want to get married', "i'm happy without marriage", 'not sure yet'] },
+  { key: 'monogamy', title: 'MONOGAMY', options: ['monogamous', 'open to open', 'poly'] },
   { key: 'smoking', title: 'SMOKING', options: ['i smoke', "i don't smoke", 'i smoke sometimes'] },
   { key: 'drinking', title: 'DRINKING', options: ['i drink', "i don't drink", 'i drink socially'] },
+  { key: 'drugs', title: 'DRUGS', options: ["i don't use drugs", 'cannabis', 'psychedelics', 'other'] },
   { key: 'religion', title: 'RELIGION', options: ['important to me', 'not important', 'spiritual but not religious'] },
-  { key: 'politics', title: 'POLITICS', options: ['progressive', 'moderate', 'conservative'] },
+  { key: 'politics', title: 'POLITICS', options: ['progressive', 'moderate', 'conservative', 'independent', 'apolitical'] },
   { key: 'lifestyle', title: 'LIFESTYLE', options: ['homebody', 'social', 'somewhere in between'] },
+];
+
+const religionOptions = [
+  'Christian — Catholic',
+  'Christian — Protestant',
+  'Christian — Orthodox',
+  'Christian — other',
+  'Jewish',
+  'Muslim',
+  'Hindu',
+  'Buddhist',
+  'Sikh',
+  'other',
 ];
 
 export default function DealbreakersPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [hardLines, setHardLines] = useState<Record<string, boolean>>({});
+  const [religionDetail, setReligionDetail] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   function selectAnswer(questionKey: string, option: string) {
     setAnswers(prev => ({ ...prev, [questionKey]: option }));
+    // Clear religion detail if they change away from "important to me"
+    if (questionKey === 'religion' && option !== 'important to me') {
+      setReligionDetail('');
+    }
   }
 
   function toggleHardLine(questionKey: string) {
@@ -35,11 +56,18 @@ export default function DealbreakersPage() {
 
   async function handleSubmit() {
     setSubmitting(true);
-    const data = Object.entries(answers).map(([question, answer]) => ({
-      question,
-      answer,
-      isDealbreaker: !!hardLines[question],
-    }));
+    const data = Object.entries(answers).map(([question, answer]) => {
+      // Append religion detail if applicable
+      const finalAnswer =
+        question === 'religion' && answer === 'important to me' && religionDetail
+          ? `important to me — ${religionDetail}`
+          : answer;
+      return {
+        question,
+        answer: finalAnswer,
+        isDealbreaker: !!hardLines[question],
+      };
+    });
     await saveAllDealbreakers(data);
   }
 
@@ -172,6 +200,47 @@ export default function DealbreakersPage() {
                   </div>
                 );
               })}
+
+              {/* Religion follow-up dropdown */}
+              {q.key === 'religion' && answers.religion === 'important to me' && (
+                <div style={{ marginTop: 16 }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontFamily: 'var(--font-system)',
+                      fontSize: 10,
+                      fontWeight: 500,
+                      letterSpacing: '0.16em',
+                      textTransform: 'uppercase',
+                      color: 'var(--gray-quiet)',
+                      marginBottom: 6,
+                    }}
+                  >
+                    which one?
+                  </label>
+                  <select
+                    value={religionDetail}
+                    onChange={e => setReligionDetail(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: 13,
+                      border: '1px solid var(--rule)',
+                      background: 'var(--paper)',
+                      fontFamily: 'var(--font-system)',
+                      fontSize: 13,
+                      color: 'var(--ink-true)',
+                      outline: 'none',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                    }}
+                  >
+                    <option value="" disabled>select</option>
+                    {religionOptions.map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Hard line checkbox */}
               <div
