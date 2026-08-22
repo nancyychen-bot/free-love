@@ -28,17 +28,6 @@ const mechanics = [
   { label: "billing pause trigger", value: "twenty-one days with zero introductions" },
 ];
 
-const principles = [
-  "We optimize for exits, not engagement. Our north-star metric is successful departures — people who found their person and left.",
-  "Nobody's visibility is auctioned. Nobody buys an advantage. Same price for everyone. Billing pauses when we give you nothing.",
-  "We collect the minimum, say exactly what we keep, and never monetize who you are.",
-  "We will not sort people into desirability tiers. If we surface two people to each other, we can tell them why.",
-  "No infinite deck. No variable-reward mechanics. No fixed daily quota that forces filler. Introductions happen when someone genuinely matches.",
-  "The whole person — how they think, how they live, and yes, what they look like. Physical compatibility is one real dimension of matchmaking alongside values, depth, and lifestyle.",
-  "We design against ghosting and toward kind closure. When something ends, it ends with dignity.",
-  "Every person is verified as real. Abusive behavior is met with zero tolerance. Safety is built in, not bolted on.",
-  "The matching logic is not a black box. Anyone can read how they are being matched. The code is open source, the formula is published, the explanation is plain language.",
-];
 
 export default function HowThisWorksPage() {
   return (
@@ -230,92 +219,6 @@ export default function HowThisWorksPage() {
           </div>
         </div>
 
-        {/* ── The principles ─────────────────────────────────── */}
-        <div style={{ marginTop: 30 }}>
-          <div
-            style={{
-              fontFamily: "var(--font-system)",
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase" as const,
-              color: "var(--ink-true)",
-              marginBottom: 14,
-            }}
-          >
-            THE NINE LINES WE WILL NOT CROSS
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column" as const, gap: 16 }}>
-            {principles.map((principle, index) => (
-              <div key={index} style={{ display: "flex", gap: 14 }}>
-                <span
-                  style={{
-                    fontFamily: "var(--font-system)",
-                    fontSize: 11,
-                    color: "var(--gray-quiet)",
-                    width: 20,
-                    minWidth: 20,
-                    lineHeight: 1.65,
-                    textAlign: "right" as const,
-                  }}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-system)",
-                    fontSize: 12.5,
-                    lineHeight: 1.65,
-                    color: "var(--ink-true)",
-                  }}
-                >
-                  {principle}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── When principles conflict ───────────────────────── */}
-        <div style={{ marginTop: 30 }}>
-          <div
-            style={{
-              fontFamily: "var(--font-system)",
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase" as const,
-              color: "var(--ink-true)",
-              marginBottom: 14,
-            }}
-          >
-            WHEN PRINCIPLES CONFLICT
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column" as const, gap: 16 }}>
-            <p
-              style={{
-                fontFamily: "var(--font-system)",
-                fontSize: 12.5,
-                lineHeight: 1.65,
-                color: "var(--ink-true)",
-              }}
-            >
-              Safety beats privacy. When protecting people on the platform requires collecting or acting on information we&rsquo;d otherwise rather not touch, safety wins.
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-system)",
-                fontSize: 12.5,
-                lineHeight: 1.65,
-                color: "var(--ink-true)",
-              }}
-            >
-              Unequal match frequency is a consequence of refusing to fake matches. Some people receive introductions weekly and some go six weeks without one. We accept this, we measure it, and we show it to you rather than hiding it.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
