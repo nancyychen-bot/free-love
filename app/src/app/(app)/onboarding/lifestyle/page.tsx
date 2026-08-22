@@ -21,6 +21,7 @@ const questions: QuestionDef[] = [
 
 const KINK_OPTIONS = [
   'i am dominant', 'i am submissive', 'i am a switch', 'bdsm', 'rough', 'sensual', 'threesome', 'parties',
+  'role play', 'exhibitionist', 'voyeur', 'tantra', 'toys', 'open to exploring',
 ];
 
 const MULTI_SELECT_KEYS = new Set(['drugs', 'kinks']);
