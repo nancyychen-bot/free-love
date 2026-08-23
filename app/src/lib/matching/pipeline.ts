@@ -26,7 +26,17 @@ export async function runMatchingPipeline(): Promise<number> {
     if (data) profileCache.set(uid, data);
   }
 
+  // Batch load existing introductions and blocked pairs (avoid N² DB queries)
+  const allIntros = await db.select({ userAId: introductions.userAId, userBId: introductions.userBId }).from(introductions);
+  const introSet = new Set(allIntros.map(i => `${i.userAId}:${i.userBId}`).concat(allIntros.map(i => `${i.userBId}:${i.userAId}`)));
+
+  const allBlocked = await db.select({ blockerId: blockedPairs.blockerId, blockedId: blockedPairs.blockedId }).from(blockedPairs);
+  const blockedSet = new Set(allBlocked.map(b => `${b.blockerId}:${b.blockedId}`).concat(allBlocked.map(b => `${b.blockedId}:${b.blockerId}`)));
+
   const results: { userAId: string; userBId: string; score: number; explanation: string }[] = [];
+  const allScores: number[] = [];
+  let hardFilterPasses = 0;
+  let hardFilterFails = 0;
   const userIds = Array.from(profileCache.keys());
 
   for (let i = 0; i < userIds.length; i++) {
@@ -34,25 +44,18 @@ export async function runMatchingPipeline(): Promise<number> {
       const a = profileCache.get(userIds[i])!;
       const b = profileCache.get(userIds[j])!;
 
-      // Skip existing introductions
-      const existing = await db.select({ id: introductions.id }).from(introductions)
-        .where(or(
-          and(eq(introductions.userAId, a.userId), eq(introductions.userBId, b.userId)),
-          and(eq(introductions.userAId, b.userId), eq(introductions.userBId, a.userId))
-        )).limit(1);
-      if (existing.length > 0) continue;
+      // Skip existing introductions (in-memory lookup)
+      if (introSet.has(`${a.userId}:${b.userId}`)) continue;
 
-      // Skip blocked
-      const blocked = await db.select({ blockerId: blockedPairs.blockerId }).from(blockedPairs)
-        .where(or(
-          and(eq(blockedPairs.blockerId, a.userId), eq(blockedPairs.blockedId, b.userId)),
-          and(eq(blockedPairs.blockerId, b.userId), eq(blockedPairs.blockedId, a.userId))
-        )).limit(1);
-      if (blocked.length > 0) continue;
+      // Skip blocked (in-memory lookup)
+      if (blockedSet.has(`${a.userId}:${b.userId}`)) continue;
 
-      if (!passesHardFilters(a, b)) continue;
+      const passes = passesHardFilters(a, b);
+      if (!passes) { hardFilterFails++; continue; }
+      hardFilterPasses++;
 
       const score = scoreCompatibility(a, b);
+      allScores.push(score);
       if (score >= MATCHING_CONFIG.COMPATIBILITY_FLOOR) {
         results.push({ userAId: a.userId, userBId: b.userId, score, explanation: generateExplanation(a, b, score) });
       }
@@ -80,7 +83,14 @@ export async function runMatchingPipeline(): Promise<number> {
     created++;
   }
 
-  return created;
+  const avgScore = allScores.length > 0 ? allScores.reduce((a, b) => a + b, 0) / allScores.length : 0;
+  const maxScore = allScores.length > 0 ? Math.max(...allScores) : 0;
+  const minScore = allScores.length > 0 ? Math.min(...allScores) : 0;
+  const aboveFloor = allScores.filter(s => s >= MATCHING_CONFIG.COMPATIBILITY_FLOOR).length;
+
+  console.log(`Matching: ${matchableUsers.length} users, ${userIds.length} with profiles, ${hardFilterPasses} passed hard filters, ${hardFilterFails} failed. Scores: min=${minScore.toFixed(3)}, avg=${avgScore.toFixed(3)}, max=${maxScore.toFixed(3)}, above floor=${aboveFloor}. Created ${created} introductions.`);
+
+  return { created, debug: { users: matchableUsers.length, profiles: userIds.length, hardFilterPasses, hardFilterFails, scores: { min: minScore, avg: avgScore, max: maxScore, aboveFloor }, floor: MATCHING_CONFIG.COMPATIBILITY_FLOOR } } as any;
 }
 
 async function loadProfileData(userId: string): Promise<ProfileData | null> {

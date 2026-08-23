@@ -81,9 +81,19 @@ function scorePhysical(physA: { question: string; answer: string }[], physB: { q
 }
 
 export function passesHardFilters(a: ProfileData, b: ProfileData): boolean {
-  // Orientation
-  const aSeeksB = a.profile.seeking.some(s => b.profile.gender.toLowerCase().includes(s.replace(' people', '').toLowerCase()));
-  const bSeeksA = b.profile.seeking.some(s => a.profile.gender.toLowerCase().includes(s.replace(' people', '').toLowerCase()));
+  // Orientation — normalize plural seeking terms to singular gender terms
+  const seekingToGender: Record<string, string[]> = {
+    'men': ['man'], 'women': ['woman'], 'non-binary people': ['non-binary'],
+    'man': ['man'], 'woman': ['woman'], 'non-binary': ['non-binary'],
+  };
+  const aSeeksB = a.profile.seeking.some(s => {
+    const targets = seekingToGender[s.toLowerCase()] || [s.toLowerCase()];
+    return targets.some(t => b.profile.gender.toLowerCase() === t);
+  });
+  const bSeeksA = b.profile.seeking.some(s => {
+    const targets = seekingToGender[s.toLowerCase()] || [s.toLowerCase()];
+    return targets.some(t => a.profile.gender.toLowerCase() === t);
+  });
   if (!aSeeksB || !bSeeksA) return false;
 
   // Dealbreaker conflicts
