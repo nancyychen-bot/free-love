@@ -201,6 +201,62 @@ export default function HowThisWorksPage() {
               marginBottom: 12,
             }}
           >
+            THE SCORING FORMULA
+          </div>
+
+          <p style={{
+            fontFamily: "var(--font-system)", fontSize: 12.5, lineHeight: 1.65,
+            color: "var(--ink-true)", marginBottom: 16,
+          }}>
+            Every candidate who passes your hard filters gets a compatibility score from 0 to 1. Below 0.6, nothing surfaces. Here is how the score breaks down:
+          </p>
+
+          <div>
+            {[
+              { label: "values alignment", value: "25%", detail: "shared values, weighted by rank. a shared #1 value counts far more than a shared #5." },
+              { label: "qualities alignment", value: "25%", detail: "same approach — shared traits you want in a partner, weighted by rank order." },
+              { label: "life answers", value: "20%", detail: "qualitative meaning overlap in what you wrote. scored by a language model that reads both sets of answers." },
+              { label: "lifestyle alignment", value: "15%", detail: "non-dealbreaker answers on kids, marriage, monogamy, religion, politics, sexuality. exact match = full, partial = half." },
+              { label: "physical match", value: "15%", detail: "does each person match what the other said they are attracted to? bidirectional. 'no preference' = automatic full score." },
+            ].map((row, index) => (
+              <div key={row.label} style={{
+                padding: "12px 0",
+                borderTop: "1px solid var(--rule)",
+                borderBottom: index === 4 ? "1px solid var(--rule)" : "none",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <span style={{ fontFamily: "var(--font-system)", fontSize: 12, color: "var(--gray-quiet)" }}>{row.label}</span>
+                  <span style={{ fontFamily: "var(--font-system)", fontSize: 12, fontWeight: 500, color: "var(--ink-true)" }}>{row.value}</span>
+                </div>
+                <p style={{ fontFamily: "var(--font-system)", fontSize: 11, lineHeight: 1.6, color: "var(--gray-quiet)", marginTop: 4 }}>
+                  {row.detail}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p style={{
+            fontFamily: "var(--font-system)", fontSize: 12.5, lineHeight: 1.65,
+            color: "var(--gray-quiet)", marginTop: 16,
+          }}>
+            Dealbreakers are absolute: if you flagged something, anyone who does not match is excluded before scoring begins. Preferences that are not flagged as dealbreakers influence the score but never exclude.
+          </p>
+
+        </div>
+
+        {/* ── The mechanics ──────────────────────────────────── */}
+        <div style={{ marginTop: 30 }}>
+          <div
+            style={{
+              fontFamily: "var(--font-system)",
+              fontSize: 10,
+              fontWeight: 500,
+              letterSpacing: "0.16em",
+              textTransform: "uppercase" as const,
+              color: "var(--ink-true)",
+              marginBottom: 12,
+            }}
+          >
             THE MECHANICS
           </div>
 

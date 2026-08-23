@@ -64,7 +64,12 @@ export default function PhysicalPage() {
     fitness_preference: [],
   });
 
+  const [prefDealbreakers, setPrefDealbreakers] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  function togglePrefDealbreaker(key: string) {
+    setPrefDealbreakers(prev => ({ ...prev, [key]: !prev[key] }));
+  }
 
   function selectAboutSingle(key: 'height' | 'body_type' | 'hair_color' | 'fitness', value: string) {
     setAboutYou(prev => ({ ...prev, [key]: value }));
@@ -102,11 +107,11 @@ export default function PhysicalPage() {
       { question: 'hair_color', answer: aboutYou.hair_color, isDealbreaker: false },
       { question: 'ethnicity', answer: aboutYou.ethnicity.join(', '), isDealbreaker: false },
       { question: 'fitness', answer: aboutYou.fitness, isDealbreaker: false },
-      { question: 'height_preference', answer: heightNoPreference ? 'no preference' : `${inchesToDisplay(heightMin)}–${inchesToDisplay(heightMax)}`, isDealbreaker: false },
-      { question: 'body_type_preference', answer: preferences.body_type_preference.join(', '), isDealbreaker: false },
-      { question: 'hair_color_preference', answer: preferences.hair_color_preference.join(', '), isDealbreaker: false },
-      { question: 'ethnicity_preference', answer: preferences.ethnicity_preference.join(', '), isDealbreaker: false },
-      { question: 'fitness_preference', answer: preferences.fitness_preference.join(', '), isDealbreaker: false },
+      { question: 'height_preference', answer: heightNoPreference ? 'no preference' : `${inchesToDisplay(heightMin)}–${inchesToDisplay(heightMax)}`, isDealbreaker: !!prefDealbreakers.height },
+      { question: 'body_type_preference', answer: preferences.body_type_preference.join(', '), isDealbreaker: !!prefDealbreakers.body_type },
+      { question: 'hair_color_preference', answer: preferences.hair_color_preference.join(', '), isDealbreaker: !!prefDealbreakers.hair_color },
+      { question: 'ethnicity_preference', answer: preferences.ethnicity_preference.join(', '), isDealbreaker: !!prefDealbreakers.ethnicity },
+      { question: 'fitness_preference', answer: preferences.fitness_preference.join(', '), isDealbreaker: !!prefDealbreakers.fitness },
     ].filter(d => d.answer);
 
     await savePhysical(data);
@@ -472,6 +477,12 @@ export default function PhysicalPage() {
 
           <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
           {renderMultiSelectChips(BODY_PREF_OPTIONS, preferences.body_type_preference, (v) => togglePrefMulti('body_type_preference', v))}
+          {preferences.body_type_preference.length > 0 && !preferences.body_type_preference.includes('no preference') && (
+            <div onClick={() => togglePrefDealbreaker('body_type')} style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, cursor: 'pointer' }}>
+              <div style={{ width: 15, height: 15, minWidth: 15, border: '1px solid var(--ink-true)', backgroundColor: prefDealbreakers.body_type ? 'var(--ink-true)' : 'transparent' }} />
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 14, color: 'var(--ink-true)' }}>dealbreaker</span>
+            </div>
+          )}
         </div>
 
         {/* ─── HAIR COLOR ─── */}
@@ -494,6 +505,12 @@ export default function PhysicalPage() {
           {renderSingleSelectRows(HAIR_OPTIONS, aboutYou.hair_color, (v) => selectAboutSingle('hair_color', v))}
           <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
           {renderMultiSelectChips(HAIR_PREF_OPTIONS, preferences.hair_color_preference, (v) => togglePrefMulti('hair_color_preference', v))}
+          {preferences.hair_color_preference.length > 0 && !preferences.hair_color_preference.includes('no preference') && (
+            <div onClick={() => togglePrefDealbreaker('hair_color')} style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, cursor: 'pointer' }}>
+              <div style={{ width: 15, height: 15, minWidth: 15, border: '1px solid var(--ink-true)', backgroundColor: prefDealbreakers.hair_color ? 'var(--ink-true)' : 'transparent' }} />
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 14, color: 'var(--ink-true)' }}>dealbreaker</span>
+            </div>
+          )}
         </div>
 
         {/* ─── ETHNICITY ─── */}
@@ -522,6 +539,12 @@ export default function PhysicalPage() {
           <div style={{ marginTop: 8 }}>
             {renderMultiSelectChips(ETHNICITY_PREF_OPTIONS, preferences.ethnicity_preference, (v) => togglePrefMulti('ethnicity_preference', v))}
           </div>
+          {preferences.ethnicity_preference.length > 0 && !preferences.ethnicity_preference.includes('no preference') && (
+            <div onClick={() => togglePrefDealbreaker('ethnicity')} style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, cursor: 'pointer' }}>
+              <div style={{ width: 15, height: 15, minWidth: 15, border: '1px solid var(--ink-true)', backgroundColor: prefDealbreakers.ethnicity ? 'var(--ink-true)' : 'transparent' }} />
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 14, color: 'var(--ink-true)' }}>dealbreaker</span>
+            </div>
+          )}
         </div>
 
         {/* ─── FITNESS ─── */}
@@ -546,6 +569,12 @@ export default function PhysicalPage() {
 
           <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
           {renderMultiSelectChips(FITNESS_PREF_OPTIONS, preferences.fitness_preference, (v) => togglePrefMulti('fitness_preference', v))}
+          {preferences.fitness_preference.length > 0 && !preferences.fitness_preference.includes('no preference') && (
+            <div onClick={() => togglePrefDealbreaker('fitness')} style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, cursor: 'pointer' }}>
+              <div style={{ width: 15, height: 15, minWidth: 15, border: '1px solid var(--ink-true)', backgroundColor: prefDealbreakers.fitness ? 'var(--ink-true)' : 'transparent' }} />
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 14, color: 'var(--ink-true)' }}>dealbreaker</span>
+            </div>
+          )}
         </div>
 
         {/* Footer button */}
