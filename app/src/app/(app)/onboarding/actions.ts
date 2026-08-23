@@ -81,7 +81,7 @@ export async function saveDealbreaker(formData: FormData) {
   });
 }
 
-const PHYSICAL_KEYS = ['age_preference', 'height', 'body_type', 'hair_color', 'ethnicity', 'fitness', 'height_preference', 'body_type_preference', 'hair_color_preference', 'ethnicity_preference', 'fitness_preference'];
+const PHYSICAL_KEYS = ['age_preference', 'height', 'my_height', 'body_type', 'hair_color', 'ethnicity', 'fitness', 'height_preference', 'body_type_preference', 'hair_color_preference', 'ethnicity_preference', 'fitness_preference'];
 const PARTNERSHIP_KEYS = ['marriage', 'monogamy', 'kids_have', 'kids_want'];
 const BELIEFS_KEYS = ['religion', 'politics'];
 const LIFESTYLE_KEYS = ['drinking', 'smoking', 'drugs', 'lifestyle', 'sexuality'];
@@ -225,7 +225,7 @@ export async function saveLifestyle(
   redirect('/onboarding/qualities');
 }
 
-export async function saveQualities(ranked: string[]) {
+export async function saveQualities(iAm: string[], iWant: string[]) {
   const user = await getUser();
   if (!user) redirect('/login');
 
@@ -238,13 +238,20 @@ export async function saveQualities(ranked: string[]) {
 
   await db.delete(rankedQualities).where(eq(rankedQualities.profileId, profile.id));
 
-  await db.insert(rankedQualities).values(
-    ranked.map((quality, index) => ({
+  const rows = [
+    ...iAm.map((quality, index) => ({
       profileId: profile.id,
-      quality,
+      quality: `self:${quality}`,
       rank: index + 1,
-    }))
-  );
+    })),
+    ...iWant.map((quality, index) => ({
+      profileId: profile.id,
+      quality: `want:${quality}`,
+      rank: index + 1,
+    })),
+  ];
+
+  await db.insert(rankedQualities).values(rows);
 
   await db.update(users)
     .set({ onboardingStep: 6 })

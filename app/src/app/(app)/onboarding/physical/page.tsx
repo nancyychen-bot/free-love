@@ -25,7 +25,10 @@ export default function PhysicalPage() {
   const [ageMax, setAgeMax] = useState(45);
   const [ageDealbreaker, setAgeDealbreaker] = useState(false);
 
-  // Height in total inches (4'10" = 58, 6'8" = 80)
+  // Your height in inches
+  const [myHeight, setMyHeight] = useState(66); // 5'6" default
+
+  // Height preference in total inches
   const [heightMin, setHeightMin] = useState(60); // 5'0"
   const [heightMax, setHeightMax] = useState(76); // 6'4"
   const [heightNoPreference, setHeightNoPreference] = useState(true);
@@ -103,6 +106,7 @@ export default function PhysicalPage() {
     const data = [
       { question: 'age_preference', answer: `${ageMin}–${ageMax}`, isDealbreaker: ageDealbreaker },
       { question: 'height', answer: aboutYou.height, isDealbreaker: false },
+      { question: 'my_height', answer: inchesToDisplay(myHeight), isDealbreaker: false },
       { question: 'body_type', answer: aboutYou.body_type, isDealbreaker: false },
       { question: 'hair_color', answer: aboutYou.hair_color, isDealbreaker: false },
       { question: 'ethnicity', answer: aboutYou.ethnicity.join(', '), isDealbreaker: false },
@@ -384,6 +388,36 @@ export default function PhysicalPage() {
 
           <div style={{ ...subLabelStyle, marginTop: 14 }}>YOU ARE</div>
           {renderSingleSelectRows(HEIGHT_OPTIONS, aboutYou.height, (v) => selectAboutSingle('height', v))}
+
+          {/* Actual height slider */}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)' }}>
+                YOUR ACTUAL HEIGHT
+              </span>
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 18, fontWeight: 500, color: 'var(--ink-true)' }}>
+                {inchesToDisplay(myHeight)}
+              </span>
+            </div>
+            <div style={{ position: 'relative', height: 40, marginTop: 8, padding: '0 4px' }}>
+              <div style={{ position: 'absolute', top: 18, left: 4, right: 4, height: 2, background: 'var(--rule)' }} />
+              <div style={{ position: 'absolute', top: 18, height: 2, left: 0, width: `${((myHeight - 54) / (84 - 54)) * 100}%`, background: 'var(--ink-true)' }} />
+              <input
+                type="range" min={54} max={84} value={myHeight}
+                onChange={(e) => setMyHeight(parseInt(e.target.value))}
+                className="range-thumb"
+                style={{
+                  position: 'absolute', top: 8, left: 0, width: '100%',
+                  appearance: 'none', WebkitAppearance: 'none',
+                  background: 'transparent', pointerEvents: 'auto', zIndex: 2, height: 20,
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 10, color: 'var(--gray-quiet)' }}>4&apos;6&quot;</span>
+              <span style={{ fontFamily: 'var(--font-system)', fontSize: 10, color: 'var(--gray-quiet)' }}>7&apos;0&quot;</span>
+            </div>
+          </div>
 
           <div style={{ ...subLabelStyle, marginTop: 20 }}>YOUR PREFERENCE</div>
 

@@ -6,28 +6,37 @@ import FooterLink from '@/app/components/FooterLink';
 import DragRankList from '@/app/components/DragRankList';
 import { saveQualities } from '../actions';
 
-const DEFAULT_RANKED = ['humor', 'candor', 'curiosity', 'warmth'];
-const DEFAULT_UNRANKED = ['ambition', 'steadiness', 'depth', 'playfulness', 'self-awareness'];
+const ALL_QUALITIES = ['humor', 'candor', 'curiosity', 'warmth', 'ambition', 'steadiness', 'depth', 'playfulness', 'self-awareness'];
+const DEFAULT_I_AM = ['humor', 'candor', 'curiosity', 'warmth'];
+const DEFAULT_I_WANT = ['warmth', 'humor', 'depth', 'candor'];
 
 export default function QualitiesPage() {
-  const [ranked, setRanked] = useState<string[]>(DEFAULT_RANKED);
-  const [unranked, setUnranked] = useState<string[]>(DEFAULT_UNRANKED);
+  const [phase, setPhase] = useState<'i-am' | 'i-want'>('i-am');
+  const [iAm, setIAm] = useState<string[]>(DEFAULT_I_AM);
+  const [iAmUnranked, setIAmUnranked] = useState<string[]>(ALL_QUALITIES.filter(q => !DEFAULT_I_AM.includes(q)));
+  const [iWant, setIWant] = useState<string[]>(DEFAULT_I_WANT);
+  const [iWantUnranked, setIWantUnranked] = useState<string[]>(ALL_QUALITIES.filter(q => !DEFAULT_I_WANT.includes(q)));
   const [isPending, startTransition] = useTransition();
 
   const handleChipClick = useCallback(
-    (chipLabel: string) => {
+    (chipLabel: string, ranked: string[], setRanked: (v: string[]) => void, unranked: string[], setUnranked: (v: string[]) => void) => {
       const lastRanked = ranked[ranked.length - 1];
-      setRanked((prev) => [...prev.slice(0, -1), chipLabel]);
-      setUnranked((prev) => [...prev.filter((u) => u !== chipLabel), lastRanked]);
+      setRanked([...ranked.slice(0, -1), chipLabel]);
+      setUnranked([...unranked.filter(u => u !== chipLabel), lastRanked]);
     },
-    [ranked]
+    []
   );
 
   const handleSave = () => {
     startTransition(async () => {
-      await saveQualities(ranked);
+      await saveQualities(iAm, iWant);
     });
   };
+
+  const currentRanked = phase === 'i-am' ? iAm : iWant;
+  const currentUnranked = phase === 'i-am' ? iAmUnranked : iWantUnranked;
+  const setCurrentRanked = phase === 'i-am' ? setIAm : setIWant;
+  const setCurrentUnranked = phase === 'i-am' ? setIAmUnranked : setIWantUnranked;
 
   return (
     <div className="screen" style={{ padding: '0 0 60px 0' }}>
@@ -40,7 +49,7 @@ export default function QualitiesPage() {
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
             letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gray-quiet)',
           }}>
-            STEP 7 OF 9
+            STEP 5 OF 9
           </span>
           <span style={{
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
@@ -56,7 +65,7 @@ export default function QualitiesPage() {
           letterSpacing: '0.14em', textTransform: 'uppercase',
           color: 'var(--ink-true)', marginTop: 28,
         }}>
-          PUT THESE IN ORDER
+          {phase === 'i-am' ? 'QUALITIES THAT DESCRIBE YOU' : 'QUALITIES YOU WANT IN A PARTNER'}
         </h1>
 
         {/* Explanation */}
@@ -64,16 +73,30 @@ export default function QualitiesPage() {
           fontFamily: 'var(--font-system)', fontSize: 12.5, lineHeight: 1.7,
           color: 'var(--gray-quiet)', marginTop: 12,
         }}>
-          Four qualities, ranked one through four. They cannot be tied. The order is what we match on.
+          {phase === 'i-am'
+            ? 'Rank four qualities that best describe who you are. Be honest — we match what you say you are against what someone else says they want.'
+            : 'Now rank four qualities you want most in a partner. These can be different from what you ranked for yourself.'}
         </p>
 
-        {/* Ranked list with drag */}
-        <div style={{ marginTop: 28 }}>
-          <DragRankList items={ranked} onChange={setRanked} />
+        {/* Phase indicator */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+          <div style={{
+            flex: 1, height: 3,
+            background: 'var(--ink-true)',
+          }} />
+          <div style={{
+            flex: 1, height: 3,
+            background: phase === 'i-want' ? 'var(--ink-true)' : 'var(--rule)',
+          }} />
         </div>
 
-        {/* Not ranked section */}
-        <div style={{ marginTop: 28 }}>
+        {/* Ranked list */}
+        <div style={{ marginTop: 24 }}>
+          <DragRankList items={currentRanked} onChange={setCurrentRanked} />
+        </div>
+
+        {/* Not ranked */}
+        <div style={{ marginTop: 24 }}>
           <div style={{
             fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
             letterSpacing: '0.16em', textTransform: 'uppercase',
@@ -82,10 +105,10 @@ export default function QualitiesPage() {
             NOT RANKED
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {unranked.map((chip) => (
+            {currentUnranked.map(chip => (
               <button
                 key={chip}
-                onClick={() => handleChipClick(chip)}
+                onClick={() => handleChipClick(chip, currentRanked, setCurrentRanked, currentUnranked, setCurrentUnranked)}
                 style={{
                   fontFamily: 'var(--font-system)', fontSize: 13.5,
                   color: 'var(--gray-quiet)', border: '1px solid var(--rule)',
@@ -107,20 +130,34 @@ export default function QualitiesPage() {
           Swap any of these in. You can change the order forever. You cannot rank them equally.
         </p>
 
-        {/* Save button */}
-        <button
-          onClick={handleSave}
-          disabled={isPending}
-          style={{
-            width: '100%', padding: 15, marginTop: 28,
-            background: isPending ? 'var(--gray-quiet)' : 'var(--ink-true)',
-            color: 'var(--paper)', fontFamily: 'var(--font-system)',
-            fontSize: 13.5, fontWeight: 500, border: 'none',
-            cursor: isPending ? 'default' : 'pointer',
-          }}
-        >
-          {isPending ? 'saving...' : 'save this order'}
-        </button>
+        {/* Button */}
+        {phase === 'i-am' ? (
+          <button
+            onClick={() => setPhase('i-want')}
+            style={{
+              width: '100%', padding: 15, marginTop: 28,
+              background: 'var(--ink-true)', color: 'var(--paper)',
+              fontFamily: 'var(--font-system)', fontSize: 13.5, fontWeight: 500,
+              border: 'none', cursor: 'pointer',
+            }}
+          >
+            next: what you want in a partner
+          </button>
+        ) : (
+          <button
+            onClick={handleSave}
+            disabled={isPending}
+            style={{
+              width: '100%', padding: 15, marginTop: 28,
+              background: isPending ? 'var(--gray-quiet)' : 'var(--ink-true)',
+              color: 'var(--paper)', fontFamily: 'var(--font-system)',
+              fontSize: 13.5, fontWeight: 500, border: 'none',
+              cursor: isPending ? 'default' : 'pointer',
+            }}
+          >
+            {isPending ? 'saving...' : 'save both and continue'}
+          </button>
+        )}
       </div>
 
       <FooterLink />
