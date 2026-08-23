@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BackButton from '@/app/components/BackButton';
 import StatusBar from '@/app/components/StatusBar';
@@ -38,9 +39,13 @@ export default function ChatClient({
   otherPhoto: string | null;
   initialMessages: Message[];
 }) {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
+  const [showCloseForm, setShowCloseForm] = useState(false);
+  const [closeReason, setCloseReason] = useState('');
+  const [closing, setClosing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -122,6 +127,26 @@ export default function ChatClient({
     }
   };
 
+  const handleClose = async () => {
+    if (closing) return;
+    setClosing(true);
+    try {
+      const res = await fetch(`/api/conversations/${conversationId}/close`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: closeReason.trim() || null }),
+      });
+      if (res.ok) {
+        router.push('/home');
+        router.refresh();
+      }
+    } catch {
+      // silent
+    } finally {
+      setClosing(false);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -186,6 +211,54 @@ export default function ChatClient({
         </Link>
         <BackButton href="/home" />
       </div>
+
+      {/* Close conversation link + form */}
+      <div style={{ padding: '8px 24px 0', textAlign: 'right' }}>
+        <button
+          onClick={() => setShowCloseForm(!showCloseForm)}
+          style={{
+            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+            fontFamily: 'var(--font-system)', fontSize: 11, color: 'var(--gray-quiet)',
+          }}
+        >
+          {showCloseForm ? 'cancel' : 'close conversation'}
+        </button>
+      </div>
+
+      {showCloseForm && (
+        <div style={{ padding: '12px 24px 0' }}>
+          <p style={{
+            fontFamily: 'var(--font-system)', fontSize: 11, color: 'var(--gray-quiet)',
+            marginBottom: 8,
+          }}>
+            Why do you think you are not compatible?
+          </p>
+          <textarea
+            value={closeReason}
+            onChange={(e) => setCloseReason(e.target.value)}
+            placeholder="optional"
+            style={{
+              width: '100%', minHeight: 72, padding: 10,
+              fontFamily: 'var(--font-human)', fontSize: 14, lineHeight: 1.5,
+              color: 'var(--ink-human)', background: 'var(--paper)',
+              border: '1px solid var(--rule)', outline: 'none', resize: 'vertical',
+              boxSizing: 'border-box',
+            }}
+          />
+          <button
+            onClick={handleClose}
+            disabled={closing}
+            style={{
+              display: 'block', width: '100%', padding: 12, marginTop: 8,
+              background: 'transparent', border: '1px solid var(--rule)',
+              fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--gray-quiet)',
+              cursor: closing ? 'default' : 'pointer', textAlign: 'center',
+            }}
+          >
+            {closing ? 'closing...' : 'close this conversation'}
+          </button>
+        </div>
+      )}
 
       {/* Messages */}
       <div style={{ padding: '16px 24px 120px' }}>

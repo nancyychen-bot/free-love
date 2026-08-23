@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StatusBar from '@/app/components/StatusBar';
 import BackButton from '@/app/components/BackButton';
@@ -17,13 +18,20 @@ type IntroData = {
 
 export default function IntroductionClient({ data }: { data: IntroData }) {
   const router = useRouter();
+  const [capMessage, setCapMessage] = useState<string | null>(null);
 
   async function handleAction(action: string) {
-    await fetch(`/api/introductions/${data.introId}/action`, {
+    setCapMessage(null);
+    const res = await fetch(`/api/introductions/${data.introId}/action`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action }),
     });
+    const result = await res.json();
+    if (result.capped) {
+      setCapMessage(result.message);
+      return;
+    }
     router.push('/home');
     router.refresh();
   }
@@ -266,6 +274,16 @@ export default function IntroductionClient({ data }: { data: IntroData }) {
           padding: '16px 24px 32px',
         }}
       >
+        {capMessage && (
+          <p style={{
+            fontFamily: 'var(--font-system)', fontSize: 12, lineHeight: 1.5,
+            color: 'var(--gray-quiet)', marginBottom: 14,
+            padding: '10px 12px', background: 'var(--introduction-wash)',
+          }}>
+            {capMessage}
+          </p>
+        )}
+
         {/* Open a conversation — filled button */}
         <button
           onClick={() => handleAction('open')}

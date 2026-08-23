@@ -14,6 +14,12 @@ type IntroData = {
   photos: { theme: string; url: string }[];
 };
 
+type SavedIntroData = {
+  introId: string;
+  profile: { displayName: string; age: number };
+  photos: { theme: string; url: string }[];
+};
+
 type ConvoData = { id: string; name: string; photo: string | null; lastMessage: string };
 
 export default function HomeClient({
@@ -21,6 +27,7 @@ export default function HomeClient({
   userLocation,
   userPhoto,
   introductions,
+  savedIntroductions,
   conversations,
   convoCount,
 }: {
@@ -28,6 +35,7 @@ export default function HomeClient({
   userLocation: string | null;
   userPhoto: string | null;
   introductions: (IntroData | null)[];
+  savedIntroductions: (SavedIntroData | null)[];
   conversations: ConvoData[];
   convoCount: number;
 }) {
@@ -207,6 +215,54 @@ export default function HomeClient({
 
         <div style={{ borderTop: '1px solid var(--rule)' }} />
       </div>
+
+      {/* Saved introductions */}
+      {savedIntroductions.filter(Boolean).length > 0 && (
+        <div style={{ padding: '0 24px' }}>
+          <div style={{ padding: '18px 0 12px' }}>
+            <span style={{
+              fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+              letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--ink-true)',
+            }}>
+              SAVED
+            </span>
+          </div>
+
+          {savedIntroductions.filter((s): s is SavedIntroData => s !== null).map((saved) => (
+            <Link key={saved.introId} href="/introduction" style={{
+              display: 'block', textDecoration: 'none',
+              background: 'var(--introduction-wash)', padding: '14px 16px',
+              marginBottom: 8,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {saved.photos.length > 0 ? (
+                  <div className="avatar-circle" style={{ width: 36, height: 36, minWidth: 36, overflow: 'hidden' }}>
+                    <img src={saved.photos[0].url} alt={saved.profile.displayName}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '9999px' }} />
+                  </div>
+                ) : (
+                  <div className="avatar-circle" style={{ width: 36, height: 36, minWidth: 36, border: '1.5px dashed var(--introduction)' }} />
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{
+                    fontFamily: 'var(--font-system)', fontSize: 12, letterSpacing: '0.1em',
+                    textTransform: 'uppercase', color: 'var(--introduction)',
+                  }}>
+                    {saved.profile.displayName} &middot; {saved.profile.age}
+                  </p>
+                </div>
+                <span style={{
+                  fontFamily: 'var(--font-system)', fontSize: 11, color: 'var(--introduction)',
+                }}>
+                  review &#8250;
+                </span>
+              </div>
+            </Link>
+          ))}
+
+          <div style={{ borderTop: '1px solid var(--rule)', marginTop: 8 }} />
+        </div>
+      )}
 
       {/* Bottom padding */}
       <div style={{ height: 40 }} />

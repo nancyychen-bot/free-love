@@ -83,6 +83,48 @@ export default async function HomePage() {
     })
   );
 
+  // Get saved introductions
+  const savedIntros = await db
+    .select()
+    .from(introductions)
+    .where(
+      and(
+        or(
+          eq(introductions.userAId, user.id),
+          eq(introductions.userBId, user.id)
+        ),
+        eq(introductions.status, 'saved')
+      )
+    );
+
+  const savedIntroData = await Promise.all(
+    savedIntros.map(async (intro) => {
+      const otherUserId = intro.userAId === user.id ? intro.userBId : intro.userAId;
+
+      const [profile] = await db
+        .select()
+        .from(profiles)
+        .where(eq(profiles.userId, otherUserId))
+        .limit(1);
+
+      if (!profile) return null;
+
+      const photos = await db
+        .select()
+        .from(lifeSignals)
+        .where(eq(lifeSignals.profileId, profile.id));
+
+      return {
+        introId: intro.id,
+        profile: {
+          displayName: profile.displayName,
+          age: profile.age,
+        },
+        photos: photos.map(p => ({ theme: p.type || '', url: p.photoUrl || '' })),
+      };
+    })
+  );
+
   // Get active conversations
   const convos = await db
     .select()
@@ -135,6 +177,7 @@ export default async function HomePage() {
       userLocation={myProfile?.locationName || null}
       userPhoto={myPhoto}
       introductions={introData.filter(Boolean)}
+      savedIntroductions={savedIntroData.filter(Boolean)}
       conversations={convoData}
       convoCount={convos.length}
     />

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { introductions, introductionActions, conversations } from '@/lib/db/schema';
 import { getSessionUserId } from '@/lib/auth/session';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, or } from 'drizzle-orm';
 
 export async function POST(
   request: Request,
@@ -35,7 +35,32 @@ export async function POST(
       .limit(1);
 
     if (otherOpened.length > 0) {
-      // Both opened — create conversation
+      // Both opened — check conversation caps before creating
+      const userActiveConvos = await db.select({ id: conversations.id }).from(conversations)
+        .where(and(
+          or(eq(conversations.userAId, userId), eq(conversations.userBId, userId)),
+          eq(conversations.status, 'active')
+        ));
+      if (userActiveConvos.length >= 3) {
+        return NextResponse.json({
+          ok: true, capped: true,
+          message: 'You have 3 active conversations. Close one to open a new one.',
+        });
+      }
+
+      const otherActiveConvos = await db.select({ id: conversations.id }).from(conversations)
+        .where(and(
+          or(eq(conversations.userAId, otherUserId), eq(conversations.userBId, otherUserId)),
+          eq(conversations.status, 'active')
+        ));
+      if (otherActiveConvos.length >= 3) {
+        return NextResponse.json({
+          ok: true, capped: true,
+          message: 'The other person has 3 active conversations right now. Try again later.',
+        });
+      }
+
+      // Create conversation
       const existingConvo = await db.select({ id: conversations.id }).from(conversations)
         .where(eq(conversations.introductionId, id)).limit(1);
 
