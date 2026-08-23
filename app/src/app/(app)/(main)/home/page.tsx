@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
-import { profiles, introductions, conversations, messages, lifeAnswers, lifeSignals } from '@/lib/db/schema';
+import { profiles, introductions, conversations, messages, lifeAnswers, lifeSignals, lifeBasics, users, userState } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
-import { eq, or, and, desc } from 'drizzle-orm';
+import { eq, or, and, desc, count, ne } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import HomeClient from './home-client';
 
@@ -171,6 +171,36 @@ export default async function HomePage() {
     })
   );
 
+  // Compute drought data when there are no pending introductions
+  let droughtData: { dealbreakers: number; radius: number; poolSize: number } | null = null;
+  if (intros.length === 0 && myProfile) {
+    const [dbResult] = await db
+      .select({ count: count() })
+      .from(lifeBasics)
+      .where(and(eq(lifeBasics.profileId, myProfile.id), eq(lifeBasics.isDealbreaker, true)));
+
+    const [profileRow] = await db
+      .select({ radiusMiles: profiles.radiusMiles })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1);
+
+    const [poolResult] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(and(
+        eq(users.onboardingComplete, true),
+        eq(users.isAdmin, false),
+        ne(users.id, user.id)
+      ));
+
+    droughtData = {
+      dealbreakers: dbResult?.count ?? 0,
+      radius: profileRow?.radiusMiles ?? 15,
+      poolSize: poolResult?.count ?? 0,
+    };
+  }
+
   return (
     <HomeClient
       userName={myProfile?.displayName || 'there'}
@@ -180,6 +210,7 @@ export default async function HomePage() {
       savedIntroductions={savedIntroData.filter(Boolean)}
       conversations={convoData}
       convoCount={convos.length}
+      droughtData={droughtData}
     />
   );
 }

@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { pauseAccount, resumeAccount } from '@/lib/actions/account-actions';
+import { useRouter } from 'next/navigation';
+import { resumeAccount } from '@/lib/actions/account-actions';
 
 export default function PauseButton({
   currentStatus,
 }: {
   currentStatus: 'active' | 'paused_user' | 'paused_inactive';
 }) {
+  const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -26,10 +28,8 @@ export default function PauseButton({
       return;
     }
 
-    startTransition(async () => {
-      await pauseAccount();
-      setConfirming(false);
-    });
+    // Redirect to exit flow before pausing
+    router.push('/settings/exit?next=pause');
   };
 
   return (

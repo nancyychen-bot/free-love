@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { messages, conversations } from '@/lib/db/schema';
+import { messages, conversations, users } from '@/lib/db/schema';
 import { getSessionUserId } from '@/lib/auth/session';
 import { eq, or, and } from 'drizzle-orm';
+import { sendEmail } from '@/lib/email';
 
 export async function POST(
   request: Request,
@@ -31,6 +32,18 @@ export async function POST(
     senderId: userId,
     body: text.trim(),
   }).returning();
+
+  // Email the other person about the new message
+  const otherUserId = convo.userAId === userId ? convo.userBId : convo.userAId;
+  const [otherUser] = await db.select({ email: users.email })
+    .from(users).where(eq(users.id, otherUserId)).limit(1);
+  if (otherUser) {
+    await sendEmail(
+      otherUser.email,
+      'You have a new message on Free Love',
+      'You have a new message on Free Love. Open the app to read it.'
+    );
+  }
 
   return NextResponse.json({ ok: true, message: msg });
 }

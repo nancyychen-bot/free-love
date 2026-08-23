@@ -22,6 +22,12 @@ type SavedIntroData = {
 
 type ConvoData = { id: string; name: string; photo: string | null; lastMessage: string };
 
+type DroughtData = {
+  dealbreakers: number;
+  radius: number;
+  poolSize: number;
+};
+
 export default function HomeClient({
   userName,
   userLocation,
@@ -30,6 +36,7 @@ export default function HomeClient({
   savedIntroductions,
   conversations,
   convoCount,
+  droughtData,
 }: {
   userName: string;
   userLocation: string | null;
@@ -38,6 +45,7 @@ export default function HomeClient({
   savedIntroductions: (SavedIntroData | null)[];
   conversations: ConvoData[];
   convoCount: number;
+  droughtData?: DroughtData | null;
 }) {
   const currentIntro = introductions.find((i): i is IntroData => i !== null) || null;
 
@@ -144,6 +152,84 @@ export default function HomeClient({
           }}>
             We are not going to invent one. When someone clears your bar, they will appear here.
           </p>
+
+          {droughtData && (
+            <>
+              {/* State table */}
+              <div style={{ marginTop: 24 }}>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '12px 0', borderTop: '1px solid var(--rule)', borderBottom: '1px solid var(--rule)',
+                }}>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--gray-quiet)' }}>your bar</span>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--ink-true)' }}>high</span>
+                </div>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '12px 0', borderBottom: '1px solid var(--rule)',
+                }}>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--gray-quiet)' }}>dealbreakers</span>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--ink-true)' }}>{droughtData.dealbreakers}</span>
+                </div>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '12px 0', borderBottom: '1px solid var(--rule)',
+                }}>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--gray-quiet)' }}>radius</span>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--ink-true)' }}>{droughtData.radius} mi</span>
+                </div>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '12px 0', borderBottom: '1px solid var(--rule)',
+                }}>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--gray-quiet)' }}>pool size</span>
+                  <span style={{ fontFamily: 'var(--font-system)', fontSize: 12, color: 'var(--ink-true)' }}>{droughtData.poolSize}</span>
+                </div>
+              </div>
+
+              <p style={{
+                fontFamily: 'var(--font-system)', fontSize: 13.5, lineHeight: 1.5,
+                color: 'var(--gray-quiet)', marginTop: 16,
+              }}>
+                Nothing today cleared it. That is the system working, not failing.
+              </p>
+
+              {/* Lever buttons */}
+              <div style={{ marginTop: 24 }}>
+                <p style={{
+                  fontFamily: 'var(--font-system)', fontSize: 10, fontWeight: 500,
+                  letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--ink-true)',
+                  marginBottom: 12,
+                }}>
+                  WHAT YOU CAN CHANGE
+                </p>
+                <Link href="/settings/radius" style={{
+                  display: 'block', width: '100%', padding: 13,
+                  border: '1px solid var(--rule)', borderBottom: 'none',
+                  fontFamily: 'var(--font-system)', fontSize: 14,
+                  color: 'var(--ink-true)', textDecoration: 'none',
+                }}>
+                  widen radius
+                </Link>
+                <Link href="/settings/dealbreakers" style={{
+                  display: 'block', width: '100%', padding: 13,
+                  border: '1px solid var(--rule)', borderBottom: 'none',
+                  fontFamily: 'var(--font-system)', fontSize: 14,
+                  color: 'var(--ink-true)', textDecoration: 'none',
+                }}>
+                  revisit a dealbreaker
+                </Link>
+                <Link href="/settings/profile" style={{
+                  display: 'block', width: '100%', padding: 13,
+                  border: '1px solid var(--rule)',
+                  fontFamily: 'var(--font-system)', fontSize: 14,
+                  color: 'var(--ink-true)', textDecoration: 'none',
+                }}>
+                  rewrite a life answer
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       )}
 

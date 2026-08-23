@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { conversations, messages } from '@/lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { conversations, messages, userState, users } from '@/lib/db/schema';
+import { eq, desc, or, isNull, lt } from 'drizzle-orm';
+import { sendEmail } from '@/lib/email';
 
 export async function GET() {
   // Get all active conversations
@@ -11,7 +12,7 @@ export async function GET() {
 
   for (const convo of activeConvos) {
     // Find last message
-    const [lastMsg] = await db.select({ createdAt: messages.createdAt })
+    const [lastMsg] = await db.select({ createdAt: messages.createdAt, senderId: messages.senderId })
       .from(messages).where(eq(messages.conversationId, convo.id))
       .orderBy(desc(messages.createdAt)).limit(1);
 
@@ -26,9 +27,42 @@ export async function GET() {
       closed++;
     } else if (daysSince >= 3) {
       nudged++;
-      // For MVP, just count. Email nudge will be added in Task 17.
+
+      // Email the person who needs to respond
+      const lastSenderId = lastMsg?.senderId;
+      const nudgeUserId = lastSenderId
+        ? (lastSenderId === convo.userAId ? convo.userBId : convo.userAId)
+        : convo.userAId;
+
+      const [nudgeUser] = await db.select({ email: users.email })
+        .from(users).where(eq(users.id, nudgeUserId)).limit(1);
+
+      if (nudgeUser) {
+        await sendEmail(
+          nudgeUser.email,
+          'Someone is waiting for your reply on Free Love',
+          'Someone is waiting for your reply on Free Love. Open the app to continue the conversation.'
+        );
+      }
     }
   }
 
-  return NextResponse.json({ ok: true, nudged, closed });
+  // Auto-pause: check all active users for 30-day inactivity
+  let autoPaused = 0;
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  const activeUsers = await db.select()
+    .from(userState)
+    .where(eq(userState.status, 'active'));
+
+  for (const state of activeUsers) {
+    if (!state.lastActiveAt || state.lastActiveAt < thirtyDaysAgo) {
+      await db.update(userState)
+        .set({ status: 'paused_inactive', pausedAt: new Date() })
+        .where(eq(userState.userId, state.userId));
+      autoPaused++;
+    }
+  }
+
+  return NextResponse.json({ ok: true, nudged, closed, autoPaused });
 }

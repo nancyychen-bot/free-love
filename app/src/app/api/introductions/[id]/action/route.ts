@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { introductions, introductionActions, conversations } from '@/lib/db/schema';
+import { introductions, introductionActions, conversations, users } from '@/lib/db/schema';
 import { getSessionUserId } from '@/lib/auth/session';
 import { eq, and, or } from 'drizzle-orm';
+import { sendEmail } from '@/lib/email';
 
 export async function POST(
   request: Request,
@@ -72,6 +73,14 @@ export async function POST(
           userBId: intro.userBId,
           status: 'active',
         });
+
+        // Email both users about the new conversation
+        const [userA] = await db.select({ email: users.email }).from(users).where(eq(users.id, intro.userAId)).limit(1);
+        const [userB] = await db.select({ email: users.email }).from(users).where(eq(users.id, intro.userBId)).limit(1);
+        const subject = 'You have a new conversation on Free Love';
+        const text = 'You have a new conversation on Free Love. Open the app to start talking.';
+        if (userA) await sendEmail(userA.email, subject, text);
+        if (userB) await sendEmail(userB.email, subject, text);
       }
     }
   }
