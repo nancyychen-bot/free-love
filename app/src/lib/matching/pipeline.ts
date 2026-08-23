@@ -10,14 +10,18 @@ export async function runMatchingPipeline(): Promise<number> {
   const activeIds = new Set(activeStates.map(s => s.userId));
   const eligible = allUsers.filter(u => activeIds.has(u.id)).map(u => u.id);
 
-  // Filter out seed users
-  const seedEmails = await db.select({ id: users.id, email: users.email }).from(users);
-  const seedIds = new Set(seedEmails.filter(u => u.email.includes('@freelove.internal')).map(u => u.id));
-  const realUsers = eligible.filter(id => !seedIds.has(id));
+  // Filter out conversation seed users (keep seed-fake-* for testing)
+  const allEmails = await db.select({ id: users.id, email: users.email }).from(users);
+  const convoSeedIds = new Set(
+    allEmails
+      .filter(u => u.email.includes('@freelove.internal') && !u.email.startsWith('seed-fake-'))
+      .map(u => u.id)
+  );
+  const matchableUsers = eligible.filter(id => !convoSeedIds.has(id));
 
   // Load all profiles
   const profileCache: Map<string, ProfileData> = new Map();
-  for (const uid of realUsers) {
+  for (const uid of matchableUsers) {
     const data = await loadProfileData(uid);
     if (data) profileCache.set(uid, data);
   }

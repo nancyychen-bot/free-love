@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import StatusBar from '@/app/components/StatusBar';
 import BackButton from '@/app/components/BackButton';
 
@@ -141,6 +142,13 @@ export default function AdminClient({ users }: { users: UserData[] }) {
             {matchResult}
           </p>
         )}
+        <Link href="/admin/matches" style={{
+          display: 'block', marginTop: 12,
+          fontFamily: 'var(--font-system)', fontSize: 13,
+          color: 'var(--introduction)', textDecoration: 'underline',
+        }}>
+          view matches with full profiles ›
+        </Link>
       </div>
 
       <div style={{ borderTop: '1px solid var(--rule)', margin: '0 24px' }} />
