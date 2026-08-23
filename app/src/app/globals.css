@@ -301,3 +301,26 @@ a {
 .avatar-circle {
   border-radius: 9999px;
 }
+
+/* Range slider thumbs */
+.range-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--ink-true);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.range-thumb::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--ink-true);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
