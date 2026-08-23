@@ -3,6 +3,12 @@ import StatusBar from '@/app/components/StatusBar';
 import BackButton from '@/app/components/BackButton';
 import LogoutButton from './logout-button';
 import CancelAccountButton from './cancel-button';
+import PauseButton from './pause-button';
+import { db } from '@/lib/db';
+import { userState } from '@/lib/db/schema';
+import { getUser } from '@/lib/auth/get-user';
+import { eq } from 'drizzle-orm';
+import { redirect } from 'next/navigation';
 
 const profileLinks = [
   { label: 'my profile', href: '/settings/profile' },
@@ -27,7 +33,18 @@ const rowStyle = {
   color: 'var(--ink-true)',
 };
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const user = await getUser();
+  if (!user) redirect('/login');
+
+  const [state] = await db
+    .select()
+    .from(userState)
+    .where(eq(userState.userId, user.id))
+    .limit(1);
+
+  const status = (state?.status ?? 'active') as 'active' | 'paused_user' | 'paused_inactive';
+
   return (
     <div className="screen">
       <StatusBar />
@@ -81,15 +98,7 @@ export default function SettingsPage() {
         <div style={{ height: 16 }} />
 
         {/* Pause account */}
-        <div
-          style={{
-            ...rowStyle,
-            color: 'var(--gray-quiet)',
-            cursor: 'default',
-          }}
-        >
-          <span>pause account</span>
-        </div>
+        <PauseButton currentStatus={status} />
 
         {/* Log out */}
         <LogoutButton />

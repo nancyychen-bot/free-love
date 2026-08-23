@@ -5,6 +5,7 @@ import { profiles, rankedQualities, rankedValues } from '@/lib/db/schema';
 import { getUser } from '@/lib/auth/get-user';
 import { eq, asc } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
+import QualitiesEditor from './qualities-editor';
 
 export default async function QualitiesPage() {
   const user = await getUser();
@@ -16,22 +17,30 @@ export default async function QualitiesPage() {
     .where(eq(profiles.userId, user.id))
     .limit(1);
 
-  let qualities: { quality: string; rank: number }[] = [];
-  let values: { value: string; rank: number }[] = [];
+  if (!profile) redirect('/settings');
 
-  if (profile) {
-    qualities = await db
-      .select({ quality: rankedQualities.quality, rank: rankedQualities.rank })
-      .from(rankedQualities)
-      .where(eq(rankedQualities.profileId, profile.id))
-      .orderBy(asc(rankedQualities.rank));
+  const qualities = await db
+    .select({ quality: rankedQualities.quality, rank: rankedQualities.rank })
+    .from(rankedQualities)
+    .where(eq(rankedQualities.profileId, profile.id))
+    .orderBy(asc(rankedQualities.rank));
 
-    values = await db
-      .select({ value: rankedValues.value, rank: rankedValues.rank })
-      .from(rankedValues)
-      .where(eq(rankedValues.profileId, profile.id))
-      .orderBy(asc(rankedValues.rank));
-  }
+  const values = await db
+    .select({ value: rankedValues.value, rank: rankedValues.rank })
+    .from(rankedValues)
+    .where(eq(rankedValues.profileId, profile.id))
+    .orderBy(asc(rankedValues.rank));
+
+  // Parse self: and want: prefixed qualities into separate arrays
+  const iAm = qualities
+    .filter(q => q.quality.startsWith('self:'))
+    .map(q => q.quality.replace('self:', ''));
+
+  const iWant = qualities
+    .filter(q => q.quality.startsWith('want:'))
+    .map(q => q.quality.replace('want:', ''));
+
+  const rankedValuesList = values.map(v => v.value);
 
   return (
     <div className="screen" style={{ padding: '0 0 60px 0' }}>
@@ -61,99 +70,12 @@ export default async function QualitiesPage() {
         <BackButton href="/settings" />
       </div>
 
-      <div style={{ padding: '28px 24px 0' }}>
-        {/* Qualities */}
-        {qualities.length > 0 ? (
-          <div>
-            <span
-              style={{
-                fontFamily: 'var(--font-system)',
-                fontSize: 10,
-                fontWeight: 500,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color: 'var(--gray-quiet)',
-              }}
-            >
-              QUALITIES I VALUE IN A PARTNER
-            </span>
-            <div style={{ marginTop: 12 }}>
-              {qualities.map((q) => (
-                <div
-                  key={q.quality}
-                  style={{
-                    fontFamily: 'var(--font-system)',
-                    fontSize: 13,
-                    color: 'var(--ink-true)',
-                    padding: '6px 0',
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {q.rank}. {q.quality}
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p
-            style={{
-              fontFamily: 'var(--font-system)',
-              fontSize: 13,
-              color: 'var(--gray-quiet)',
-              lineHeight: 1.6,
-            }}
-          >
-            No qualities ranked yet.
-          </p>
-        )}
-
-        {/* Values */}
-        {values.length > 0 && (
-          <div style={{ marginTop: 28 }}>
-            <hr style={{ border: 'none', borderTop: '1px solid var(--rule)', marginBottom: 16 }} />
-            <span
-              style={{
-                fontFamily: 'var(--font-system)',
-                fontSize: 10,
-                fontWeight: 500,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color: 'var(--gray-quiet)',
-              }}
-            >
-              MY VALUES
-            </span>
-            <div style={{ marginTop: 12 }}>
-              {values.map((v) => (
-                <div
-                  key={v.value}
-                  style={{
-                    fontFamily: 'var(--font-system)',
-                    fontSize: 13,
-                    color: 'var(--ink-true)',
-                    padding: '6px 0',
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {v.rank}. {v.value}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Editing note */}
-        <p
-          style={{
-            fontFamily: 'var(--font-system)',
-            fontSize: 11,
-            color: 'var(--gray-quiet)',
-            marginTop: 32,
-            lineHeight: 1.6,
-          }}
-        >
-          editing coming soon
-        </p>
+      <div style={{ padding: '0 24px 40px' }}>
+        <QualitiesEditor
+          initialIAm={iAm}
+          initialIWant={iWant}
+          initialValues={rankedValuesList}
+        />
       </div>
     </div>
   );
