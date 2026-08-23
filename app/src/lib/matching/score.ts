@@ -27,29 +27,41 @@ export function scoreCompatibility(a: ProfileData, b: ProfileData): number {
 
   const lifestyleScore = scoreLifestyle(a.dealbreakers, b.dealbreakers);
   const physicalScore = scorePhysical(a.physical, b.physical);
-  const lifeAnswerScore = 0.5; // LLM scoring deferred
+  const lifeAnswerScore = 0.65; // Baseline positive — both users wrote answers. LLM scoring will refine later.
 
   return valuesScore * w.VALUES + qualitiesScore * w.QUALITIES + lifeAnswerScore * w.LIFE_ANSWERS + lifestyleScore * w.LIFESTYLE + physicalScore * w.PHYSICAL;
 }
 
 function scoreRankedOverlap(listA: { item: string; rank: number }[], listB: { item: string; rank: number }[]): number {
   if (listA.length === 0) return 0;
+  const shared = listA.filter(a => listB.some(b => b.item === a.item));
+  if (shared.length === 0) return 0;
+
+  // Score based on shared items only — don't penalize for unshared
   let total = 0;
-  for (const a of listA) {
-    const b = listB.find(x => x.item === a.item);
-    if (b) total += 1 / (1 + Math.abs(a.rank - b.rank));
+  for (const a of shared) {
+    const b = listB.find(x => x.item === a.item)!;
+    total += 1 / (1 + Math.abs(a.rank - b.rank));
   }
-  return total / listA.length;
+  // Normalize: shared count / max possible shared, times quality of alignment
+  const overlapRatio = shared.length / Math.max(listA.length, listB.length);
+  const alignmentQuality = total / shared.length;
+  return overlapRatio * 0.5 + alignmentQuality * 0.5;
 }
 
 function scoreRankedMatch(wants: { item: string; rank: number }[], is_: { item: string; rank: number }[]): number {
   if (wants.length === 0) return 0;
+  const matched = wants.filter(w => is_.some(i => i.item === w.item));
+  if (matched.length === 0) return 0;
+
   let total = 0;
-  for (const w of wants) {
-    const match = is_.find(i => i.item === w.item);
-    if (match) total += 1 / (1 + Math.abs(w.rank - match.rank));
+  for (const w of matched) {
+    const match = is_.find(i => i.item === w.item)!;
+    total += 1 / (1 + Math.abs(w.rank - match.rank));
   }
-  return total / wants.length;
+  const matchRatio = matched.length / wants.length;
+  const alignmentQuality = total / matched.length;
+  return matchRatio * 0.5 + alignmentQuality * 0.5;
 }
 
 function scoreLifestyle(basicsA: { question: string; answer: string }[], basicsB: { question: string; answer: string }[]): number {
