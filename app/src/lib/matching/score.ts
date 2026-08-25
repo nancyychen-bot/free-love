@@ -10,7 +10,12 @@ export type ProfileData = {
   physical: { question: string; answer: string; isDealbreaker: boolean }[];
 };
 
-export function scoreCompatibility(a: ProfileData, b: ProfileData): number {
+/**
+ * Deterministic score — everything EXCEPT life answers.
+ * This runs on all pairs that pass hard filters (free).
+ * Returns a partial score (0-1 range but missing the life answers weight).
+ */
+export function scoreDeterministic(a: ProfileData, b: ProfileData): number {
   const w = MATCHING_CONFIG.WEIGHTS;
 
   const valuesScore = scoreRankedOverlap(
@@ -18,7 +23,6 @@ export function scoreCompatibility(a: ProfileData, b: ProfileData): number {
     b.values.map(v => ({ item: v.value, rank: v.rank }))
   );
 
-  // Qualities: A's want vs B's self, and vice versa
   const aWants = a.qualities.filter(q => q.quality.startsWith('want:')).map(q => ({ item: q.quality.replace('want:', ''), rank: q.rank }));
   const bIs = b.qualities.filter(q => q.quality.startsWith('self:')).map(q => ({ item: q.quality.replace('self:', ''), rank: q.rank }));
   const bWants = b.qualities.filter(q => q.quality.startsWith('want:')).map(q => ({ item: q.quality.replace('want:', ''), rank: q.rank }));
@@ -27,9 +31,9 @@ export function scoreCompatibility(a: ProfileData, b: ProfileData): number {
 
   const lifestyleScore = scoreLifestyle(a.dealbreakers, b.dealbreakers);
   const physicalScore = scorePhysical(a.physical, b.physical);
-  const lifeAnswerScore = 0.65; // Baseline positive — both users wrote answers. LLM scoring will refine later.
 
-  return valuesScore * w.VALUES + qualitiesScore * w.QUALITIES + lifeAnswerScore * w.LIFE_ANSWERS + lifestyleScore * w.LIFESTYLE + physicalScore * w.PHYSICAL;
+  // Deterministic score excludes LIFE_ANSWERS weight — that's added by LLM in pass 3
+  return valuesScore * w.VALUES + qualitiesScore * w.QUALITIES + lifestyleScore * w.LIFESTYLE + physicalScore * w.PHYSICAL;
 }
 
 function scoreRankedOverlap(listA: { item: string; rank: number }[], listB: { item: string; rank: number }[]): number {
